@@ -1,0 +1,41 @@
+.google-loader {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  animation: bounce 0.6s infinite ease-in-out;
+}
+
+.dot1 {
+  background-color: #4285f4; /* Google Blue */
+  animation-delay: 0s;
+}
+.dot2 {
+  background-color: #ea4335; /* Google Red */
+  animation-delay: 0.1s;
+}
+.dot3 {
+  background-color: #fbbc05; /* Google Yellow */
+  animation-delay: 0.2s;
+}
+.dot4 {
+  background-color: #34a853; /* Google Green */
+  animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  40% {
+    transform: scale(1.3);
+    opacity: 1;
+  }
+}
