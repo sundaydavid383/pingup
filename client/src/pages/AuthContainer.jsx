@@ -1,5 +1,6 @@
-import React,{useState} from 'react';
+import React, { useState } from 'react';
 import './login.css';
+import "../styles/ui.css";
 import assets from '../assets/assets';
 import { Star } from 'lucide-react';
 import SignUpForm from '../component/SignUpForm';
@@ -17,35 +18,29 @@ const AuthContainer = () => {
                 <div>
                     <div className='flex items-center gap-3 mb-4 max-md:mt-10'>
                         <div className="flex -space-x-4">
-                            <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden">
-                                <img
-                                    src={assets.user1}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden">
-                                <img
-                                    src={assets.user2}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden">
-                                <img
-                                    src={assets.user3}
-                                    alt=""
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
+                            {[assets.user2, assets.user1, assets.user3].map((src, index) => (
+                                <div
+                                    key={index}
+                                    className="w-14 h-14 rounded-full border-2 border-white overflow-hidden"
+                                >
+                                    <img
+                                        src={src}
+                                        alt=""
+                                        className="w-[120%] h-[120%] object-cover object-center"
+                                    />
+                                </div>
+                            ))}
                         </div>
+
                         <div>
                             <div className="flex">
                                 {Array(5).fill(0).map((_, i) => (<Star key={i}
                                     className='size-4 md:size-4.5 text-transparent
                             fill-amber-500'/>))}
                             </div>
-                            <p className='text-xs md:text-sm text-white'>Used by 12k+ Individuals</p>
+                            <p className='text-xs md:text-sm text-[var(--primary-dark)]'>
+                                Used by 12k+ Individuals
+                            </p>
                         </div>
                     </div>
                     <h1 className='text-3xl md:text-6xl md:pb-2 font-bold 

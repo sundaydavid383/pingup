@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import CustomAlert from "./CustomAlert";
-import Loading from "./Loading";
-import "../styles/colors.css";
+import CustomAlert from "./shared/CustomAlert";
+import Loading from "./shared/Loading";
+import { useAuth } from "../context/AuthContext";
 
 const LoginForm = ({ onSwitchToSignUp }) => {
+  const { login } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -24,7 +26,7 @@ const LoginForm = ({ onSwitchToSignUp }) => {
     return null;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const error = validate();
     if (error) {
@@ -33,11 +35,30 @@ const LoginForm = ({ onSwitchToSignUp }) => {
     }
 
     setLoading(true);
-    setTimeout(() => {
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
       setLoading(false);
-      console.log("🔐 Logging in with:", formData);
+
+      if (!res.ok) {
+        setAlert({ show: true, message: data.message || "Login failed", type: "error" });
+        return;
+      }
+
+      // Login user into context and localStorage
+      login(data.user, data.token);
+
       setAlert({ show: true, message: "Login successful!", type: "success" });
-    }, 1000);
+    } catch (err) {
+      setLoading(false);
+      setAlert({ show: true, message: "Server error. Try again later.", type: "error" });
+    }
   };
 
   return (
@@ -73,14 +94,25 @@ const LoginForm = ({ onSwitchToSignUp }) => {
           className="w-full p-3 rounded-xl bg-[var(--input-bg)] text-[var(--input-text)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
         />
 
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={handleChange}
-          className="w-full p-3 rounded-xl bg-[var(--input-bg)] text-[var(--input-text)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
-        />
+        <div className="relative">
+          <input
+            type={showPassword ? "text" : "password"}
+            name="password"
+            autoComplete="off"
+            placeholder="Password"
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-3 rounded-xl bg-[var(--input-bg)] text-[var(--input-text)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 transform bg-[var(--accent)] px-3 py-1 rounded-full text-white text-sm hover:bg-opacity-90 transition"
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
+
 
         <button
           type="submit"
@@ -93,7 +125,7 @@ const LoginForm = ({ onSwitchToSignUp }) => {
           Don’t have an account?{" "}
           <button
             type="button"
-            className="text-[var(--accent)] font-medium underline"
+            className="text-[var(--primary)] font-medium underline"
             onClick={onSwitchToSignUp}
           >
             Sign up here
