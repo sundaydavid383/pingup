@@ -31,7 +31,7 @@ const menuItemsData = [
     content: "What a powerful night of worship!",
     createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
     media_type: "image",
-    media_url: "https://images.unsplash.com/photo-1505682634904-d7c586ea3b18?w=800&auto=format&fit=crop",
+    media_url: "https://images.unsplash.com/photo-1494790108377-be9c29b29330",
     profile_image: new URL('./user2.jpg', import.meta.url).href
   },
   {
@@ -40,7 +40,7 @@ const menuItemsData = [
     content: "Today's word was 🔥🔥🔥",
     createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     media_type: "video",
-    media_url: "https://player.vimeo.com/external/403917838.sd.mp4?s=5b17f8d8cf998cf6b0375a7fa429d3f2a7f0e05f&profile_id=164",
+    media_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
     profile_image: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&auto=format&fit=crop"
   },
   {
@@ -58,7 +58,7 @@ const menuItemsData = [
     content: "Hearts lifted, hands raised!",
     createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
     media_type: "video",
-    media_url: "https://player.vimeo.com/external/452174421.sd.mp4?s=594e45094bc1c9c7fef3d5db678a0a2d6ebfa93b&profile_id=164",
+    media_url: "https://www.w3schools.com/html/mov_bbb.mp4",
     profile_image: new URL('./user3.jpg', import.meta.url).href
   },
   {
@@ -76,7 +76,7 @@ const menuItemsData = [
     content: "Sharing the Word in the community 💖",
     createdAt: new Date(Date.now() - 21 * 60 * 60 * 1000).toISOString(),
     media_type: "video",
-    media_url: "https://player.vimeo.com/external/370663376.sd.mp4?s=f24c34d86df9ddc1aa7f75e9d3140fd38173d940&profile_id=164",
+    media_url: "https://filesamples.com/samples/video/mp4/sample_640x360.mp4",
     profile_image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop"
   },
   {
@@ -94,7 +94,7 @@ const menuItemsData = [
     content: "Teaching the next generation 🌱",
     createdAt: new Date(Date.now() - 22 * 60 * 60 * 1000).toISOString(),
     media_type: "video",
-    media_url: "https://player.vimeo.com/external/368489983.sd.mp4?s=2e85b03005b3f8c86c61e0b3e47a020493dc9180&profile_id=164",
+    media_url: "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_5mb.mp4",
     profile_image: "https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=200&auto=format&fit=crop"
   }
 ];

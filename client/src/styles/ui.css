@@ -18,8 +18,8 @@
   --hover-light: #c9d4f7; /* Indigo-50 */
   --hover-subtle-bg: #f9fafb; /* Gray-50 */
    --hover-dark: #809cf0; 
-     --dark-indigo-gradient: linear-gradient(to right, var(--secondary), var(--primary));
-  --inverse-dark-indigo-gradient: linear-gradient(to right, var(--primary), var(--secondary)); /* Slate-900 to Indigo-700 */
+     --dark-indigo-gradient: linear-gradient(to right, var(--bg-light), var(--primary));
+  --inverse-dark-indigo-gradient: linear-gradient(to right, var(--primary), var(--bg-light)); /* Slate-900 to Indigo-700 */
   --hover-gradient: linear-gradient(to right, var(--hover-light), var(--hover-dark));
   --inverse-hover-gradient: linear-gradient(to right, var(--hover-dark), var(--hover-light)); /* Slate-700 to Slate-800 */
   /* Borders & Shadows */
