@@ -12,7 +12,8 @@ import CreatePost from './pages/CreatePost';
 import { useAuth } from "./context/AuthContext";
 import Layout from './pages/Layout';
 import UserModal from "./component/UserModal";
-
+import {Toaster} from 'react-hot-toast';
+import StoriesBar from './component/StoriesBar';
 const App = () => {
   const { user, modalOpen, setModalOpen } = useAuth();
   
@@ -34,14 +35,16 @@ const App = () => {
   return (
     <>
       {modalOpen && <UserModal user={user} onClose={() => setModalOpen(false)} />}
-    
+    <Toaster/>
+   
    <Routes>
   {/* Public or Auth route */}
   <Route path="/" element={!user ? <AuthContainer /> : <Layout />}>
     {/* All protected routes go here as children of Layout */}
+    
     <Route index element={<Feed />} />
     <Route path="messages" element={<Messages />} />
-    <Route path="messages/:userId" element={<ChatBox />} />
+    <Route path="chatbox/:userId" element={<ChatBox />} />
     <Route path="connections" element={<Connections />} />
     <Route path="discover" element={<Discover />} />
     <Route path="profile" element={<Profile />} />

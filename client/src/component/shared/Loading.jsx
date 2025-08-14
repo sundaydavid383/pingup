@@ -1,17 +1,15 @@
-// Loading.jsx
 import React from "react";
-import "./loading.css"; // keep your styles
+import "./loading.css"; 
+import logo from "../../assets/logo.png";
 
 const Loading = ({ text = "Loading..." }) => {
   return (
-    <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-      <div className="google-loader mb-4">
-        <span className="dot dot1"></span>
-        <span className="dot dot2"></span>
-        <span className="dot dot3"></span>
-        <span className="dot dot4"></span>
+    <div className="loading-overlay">
+      <div className="spinner-container">
+        <div className="spinner-ring"></div>
+        <img src={logo} alt="Logo" className="spinner-logo" />
       </div>
-      <p className="text-white text-sm font-medium">{text}</p>
+      <p className="loading-text">{text}</p>
     </div>
   );
 };

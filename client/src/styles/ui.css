@@ -17,11 +17,12 @@
   --input-bg: rgba(15, 23, 42, 0.6);
   --hover-light: #c9d4f7; /* Indigo-50 */
   --hover-subtle-bg: #f9fafb; /* Gray-50 */
-   --hover-dark: #809cf0; 
-     --dark-indigo-gradient: linear-gradient(to right, var(--bg-light), var(--primary));
-  --inverse-dark-indigo-gradient: linear-gradient(to right, var(--primary), var(--bg-light)); /* Slate-900 to Indigo-700 */
+  --hover-dark: #809cf0;
+  --dark-indigo-gradient: linear-gradient(to right, var(--bg-light), var(--primary));
+  --inverse-dark-indigo-gradient: linear-gradient(to right, var(--primary), var(--bg-light));
   --hover-gradient: linear-gradient(to right, var(--hover-light), var(--hover-dark));
-  --inverse-hover-gradient: linear-gradient(to right, var(--hover-dark), var(--hover-light)); /* Slate-700 to Slate-800 */
+  --inverse-hover-gradient: linear-gradient(to right, var(--hover-dark), var(--hover-light));
+
   /* Borders & Shadows */
   --input-border: #99b7e0;
   --input-shadow: 0 0 0 1px #334155;
@@ -38,6 +39,16 @@
   /* Radius & Spacing */
   --radius: 0.5rem;
   --padding: 1rem;
+
+  /* ==== Alert / Toast colors (add these) ==== */
+  --success: #16a34a;   /* green-600 */
+  --error:   #ef4444;   /* red-500 */
+  --info:    #3b82f6;   /* blue-500 */
+  --warning: #f59e0b;   /* amber-500 */
+
+  /* commonly used text color */
+  --white: #ffffff;
+  --black: #000000;
 }
 .gradient-hover:hover {
   background: var(--hover-gradient);
@@ -87,10 +98,10 @@
 .btn::before {
   content: "";
   position: absolute;
-  top: -50%;
-  left: -169%;
-  width: 150%;
-  height: 200%;
+  top: -90%;
+  left: -194%;
+  width: 100px;
+  height: 200px;
   background: linear-gradient(
     120deg,
     rgba(255, 255, 255, 0.05) 0%,
@@ -98,7 +109,6 @@
     rgba(255, 255, 255, 0.05) 100%
   );
   transform: rotate(25deg);
-
   z-index: 1;
 }
 
@@ -110,7 +120,7 @@
   border-radius: 50%;
   pointer-events: none;
   width: 100px;
-  height: 100px;
+  height: 100vh;
   top: 50%;
   left: 50%;
   transform: scale(0) translate(-50%, -50%);
@@ -124,15 +134,17 @@
   opacity: 1;
 }
 .btn:hover::before{
-  animation: shimmer 1.5s infinite;
+  animation: shimmer 2.5s infinite;
 }
-
+.no-scrollbar::-webkit-scrollbar{
+  display: none;
+}
 /* Shimmer keyframe */
 @keyframes shimmer {
   0% {
     transform: translateX(-109%) rotate(25deg);
   }
   100% {
-    transform: translateX(160%) rotate(25deg);
+    transform: translateX(760%) rotate(25deg);
   }
 }

@@ -176,7 +176,7 @@ const loginUser = async (req, res) => {
       console.log("❌ User not found with email:", email);
       return res.status(401).json({
         success: false,
-        error: "Invalid email or password",
+        message: "Invalid email or password",
       });
     }
 
@@ -194,7 +194,7 @@ const loginUser = async (req, res) => {
       console.log("❌ Password mismatch for:", email);
       return res.status(401).json({
         success: false,
-        error: "Invalid email or password",
+        message: "Invalid email or password",
       });
     }
 
