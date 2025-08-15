@@ -17,7 +17,8 @@ import church9 from "./church6.jpg"
 
 import { 
   Home,          // FaHome
-  Users,         // FaUsers
+  Users,
+  User,
   LayoutDashboard, // FaTachometerAlt
   Search,        // FaSearch
   MessageCircle, // same name in lucide-react
@@ -31,7 +32,7 @@ const menuItemsData = [
   { to: '/messages', label: 'Message', icon: MessageCircle },
   { to: '/connections', label: 'Connections', icon: Users },
   { to: '/discover', label: 'Discover', icon: Compass },
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/profile', label: 'Profile', icon: User },
 ];
 
 const dummyStoriesData = [
@@ -405,12 +406,12 @@ const dummyPostData = [
 ];
 
 const advisite_brand = {
-  link: "https://abnations.com",
-  title: "Sponsored",
-  image: sponsors,
-  brand: "ABnations Telecom",
-  description:
-    "Get the best data plans and enjoy seamless connectivity with ABnations Telecom. Visit our website to learn more!"
+      link: "https://abnations.com",
+      title: "Sponsored",
+      image: sponsors,
+      brand: "ABnations Telecom",
+      description:
+        "Get the best data plans and enjoy seamless connectivity with ABnations Telecom. Visit our website to learn more!"
 };
 const dummyRecentMessageData = [
   {

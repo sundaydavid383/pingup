@@ -7,6 +7,7 @@ import Loading from '../component/shared/Loading'
 import UserProfileInfo from '../component/UserProfileInfo'
 import PostCard from '../component/PostCard'
 import moment from 'moment'
+import ProfileModal from '../component/ProfileModal';
 
 const Profile = () => {
   const {profileId} = useParams()
@@ -100,7 +101,7 @@ const Profile = () => {
       </div>
 
       {/* edit user profile */}
-      {showEdit && <p>show profile edit</p>}
+      {showEdit && <ProfileModal setShowEdit={setShowEdit}/>}
     </div>
   ) : (<Loading/>)
 }

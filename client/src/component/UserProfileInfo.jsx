@@ -30,7 +30,7 @@ const UserProfileInfo = ({user, posts, profileId, setShowEdit}) => {
                 </div>
                 {/* if user is not on others profile that means
                  he is opening his profile so we will give edit button */}
-                 {!profileId && <button onClick={()=>setShowEdit()}
+                 {!profileId && <button onClick={()=>setShowEdit(true)}
                  className='btn'> <PenBox className='w-4 h-4'/>Edit</button>
                 }
             </div>
