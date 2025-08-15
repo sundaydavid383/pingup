@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { LogOut } from 'lucide-react';
-import UserModal from './UserModal';
 import { useAuth } from '../context/AuthContext';
+import ActionNotifier from './shared/ActionNotifier';
 
 const UserProfileButton = () => {
   const { user, setModalOpen, logout } = useAuth();
+  const [showNotifier, setShowNotifier] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowNotifier(true);
+  };
+
+  const handleConfirm = () => {
+    logout(); // call the logout function passed from context
+    setShowNotifier(false);
+  };
+
+  const handleCancel = () => {
+    setShowNotifier(false);
+  };
 
   return (
     <div className="flex items-center justify-between w-full p-2">
@@ -30,12 +44,21 @@ const UserProfileButton = () => {
 
       {/* Logout Icon */}
       <button
-        onClick={logout}
+        onClick={handleLogoutClick}
         title="Logout"
         className="text-[var(--text-secondary)] hover:text-[var(--text-main)] transition duration-200 ml-3"
       >
         <LogOut className="w-5 h-5" />
       </button>
+
+      {/* ActionNotifier Modal */}
+      {showNotifier && (
+        <ActionNotifier
+          action="logout"
+          onConfirm={handleConfirm}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 };

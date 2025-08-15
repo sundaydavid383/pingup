@@ -17,7 +17,7 @@ const RecentMessages = () => {
 
   return (
     <div className="bg-white max-w-xs mt-4 min-h-20 rounded-md shadow text-slate-800">
-      <h3 className="font-semibold text-slate-800 mb-4 px-4 pt-4">
+      <h3 className="font-semibold text-slate-800 mb-4 px-2 pt-2">
         Recent Messages
       </h3>
 
@@ -26,7 +26,7 @@ const RecentMessages = () => {
           <Link
             key={index}
             to={`/chatbox/${message.conversation_id}`}
-            className="flex items-start gap-3 px-4 py-3 hover:bg-slate-100"
+            className="flex items-start gap-1 px-2 py-2 hover:bg-slate-100"
           >
             {/* Sender's profile image */}
             <div className="flex-shrink-0">
