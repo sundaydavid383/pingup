@@ -14,3 +14,56 @@
   --color-5: #8fd3f4;
   --radial-highlight: rgba(255, 255, 255, 0.2);
 }
+:root {
+  --color-1: #fdfcfb;
+  --color-2: #e2d1c3;
+  --color-3: #c2b3e4;
+  --color-4: #fae8f5;
+  --color-5: #8fd3f4;
+  --radial-highlight: rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient Background */
+.bg-multi-gradient {
+  position: relative; /* Required to make ::before position correctly */
+  z-index: 0; /* Important: establishes stacking context */
+  background-image:
+    radial-gradient(circle at 15% 15%, var(--radial-highlight), transparent 60%),
+    radial-gradient(circle at 85% 80%, var(--radial-highlight), transparent 70%),
+    linear-gradient(
+      135deg,
+      var(--color-1),
+      var(--color-2),
+      var(--color-3),
+      var(--color-4),
+      var(--color-5)
+    );
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  max-height: 100vh;
+  overflow-x: hidden;
+  animation: gradientShift 15s ease infinite;
+}
+
+/* Blur Overlay */
+.bg-multi-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(20px);
+  background-color: rgba(255, 255, 255, 0.06); /* subtle frost */
+  z-index: -1; /* now works properly because of z-index: 0 on parent */
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
