@@ -37,6 +37,7 @@ const SignUpForm = ({ onSwitchToLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    username:'',
     email: '',
     password: '',
     confirmPassword: '',
@@ -61,6 +62,16 @@ const SignUpForm = ({ onSwitchToLogin }) => {
       setStep(step - 1);
     }
   };
+
+const checkIfUserNameExist = async (username) => {
+  try {
+    const response = await axios.get(`http://localhost:5000/api/auth/check-username/${username}`);
+    return response.data.exists; // true if taken, false if available
+  } catch (error) {
+    console.error("Error checking username:", error);
+    return true; // assume taken if error, to be safe
+  }
+};
    
   const handleImageUpload = async (e) => {
             const file = e.target.files[0];
@@ -98,9 +109,10 @@ const SignUpForm = ({ onSwitchToLogin }) => {
             }
           };
 
-  const validateStep = () => {
+  const validateStep = async () => {
     const {
       name,
+      username,
       email,
       password,
       confirmPassword,
@@ -129,7 +141,12 @@ const SignUpForm = ({ onSwitchToLogin }) => {
             if (!email.trim()) return 'Email is required';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
         return 'Enter a valid email address';
+      if(!username || username.length < 3) return "Please enter a valid user name of more than 3 characters" 
 
+        const isTaken = await checkIfUserNameExist(formData.username);
+    if (isTaken) return "Username already exists. Please choose another.";
+      
+    
       if (!password) return 'Password is required';
       if (password.length < 6)
         return 'Password must be at least 6 characters';
@@ -236,6 +253,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
         const response = await axios.post("http://localhost:5000/api/auth/register", {
           name: formData.name,
           email: formData.email,
+          username: formData.username,   
           password: formData.password,
           dob: formData.dob,
           gender: formData.gender,
@@ -342,6 +360,15 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
                 required
                 className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
               />
+            <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
+          />
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}

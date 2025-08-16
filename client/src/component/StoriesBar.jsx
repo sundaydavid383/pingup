@@ -21,7 +21,6 @@ export default function StoriesBar() {
   return (
     <div className="w-screen sm:w-[calc(100vw-240px)] lg:max-w-2xl no-scrollbar overflow-x-auto px-4">
       <div className="flex gap-4 pb-5">
-
         {/* Add Story Card */}
         <div
           onClick={handleAddStoryClick}
@@ -34,7 +33,9 @@ export default function StoriesBar() {
             <div className="size-10 bg-[var(--primary)] rounded-full flex items-center justify-center mb-3">
               <Plus className="w-5 h-5 text-[var(--text-main)]" />
             </div>
-            <p className="text-sm font-medium text-slate-700 text-center">Add Story</p>
+            <p className="text-sm font-medium text-slate-700 text-center">
+              Add Story
+            </p>
           </div>
         </div>
 
@@ -48,30 +49,29 @@ export default function StoriesBar() {
               key={story.id}
               onClick={() => handleViewStoryClick(story)}
               className="relative rounded-lg shadow min-w-33 max-w-33 max-h-42 cursor-pointer 
-                transition-all duration-200 active:scale-95 hover:shadow-lg story-gradient"
+                transition-all duration-200 active:scale-95 hover:shadow-lg story-gradient overflow-hidden"
             >
               {/* Background media */}
               {story.media_type !== "text" && (
-                <div className="absolute inset-0 z-0 overflow-hidden rounded-lg">
+                <>
                   {isImage && (
                     <img
                       src={story.media_url}
                       alt={story.title}
                       loading="lazy"
-                      className="h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80"
+                      className="h-full w-full object-cover opacity-70 hover:opacity-90 transition duration-300"
                     />
                   )}
                   {isVideo && (
                     <video
                       src={story.media_url}
-                      autoPlay
-                      loop
                       muted
                       playsInline
-                      className="h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80"
+                      preload="metadata"
+                      className="h-full w-full object-cover opacity-70 hover:opacity-90 transition duration-300"
                     />
                   )}
-                </div>
+                </>
               )}
 
               {/* Profile image */}
