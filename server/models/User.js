@@ -41,10 +41,25 @@ const userSchema = new Schema({
   dob: Date,
   gender: String,
   occupation: String,
+
+  // 🌍 Location fields
   location: String, // human-friendly
   locationCoords: {              
     type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: { type: [Number], default: [0, 0] } // [lng, lat]
+  },
+  currentCity: { type: String, trim: true },
+  homeTown: { type: String, trim: true },
+
+  // ❤️ Relationship field
+  relationshipStatus: { 
+    type: String,
+    enum: [
+      'Single',
+      'Married',
+      'Prefer not to say', 
+    ],
+    default: 'Single'
   },
 
   // ✅ Church-related fields
@@ -72,14 +87,14 @@ const userSchema = new Schema({
   otpExpires: Date,
   isVerified: { type: Boolean, default: false },
 
-  // Social relations
+  // 👥 Social relations
   followers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   connections: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   blockedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
   mutedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 
-  // Security / account management
+  // 🔐 Security / account management
   passwordResetToken: { type: String, select: false },
   passwordResetExpires: Date,
   failedLoginAttempts: { type: Number, default: 0 },
@@ -87,7 +102,7 @@ const userSchema = new Schema({
   isDeleted: { type: Boolean, default: false },
   deletedAt: Date,
 
-  // Sessions / analytics / preferences
+  // 📊 Sessions / analytics / preferences
   sessions: [sessionSchema],
   notificationSettings: { type: notificationSettingsSchema, default: () => ({}) },
   privacySettings: { type: privacySettingsSchema, default: () => ({}) },

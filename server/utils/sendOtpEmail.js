@@ -28,7 +28,7 @@ const mailOptions = {
   html: `
     <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 540px; margin: auto; background: #ffffff; padding: 30px; border-radius: 16px; box-shadow: 0 6px 20px rgba(0,0,0,0.08); text-align: center;">
       
-      <img src="http://localhost:5000/assets/logo.png" alt="Springs Connect Logo" style="width: 80px; height: auto; margin-bottom: 20px;" />
+      <img src="https://res.cloudinary.com/dr0pxpbnj/image/upload/v1755452417/profile_pics/logo-1755452391046-4de60c87-0f58-433d-80c0-55abb6b8177b.png" alt="Springs Connect Logo" style="width: 80px; height: auto; margin-bottom: 20px;" />
 
       <h2 style="color: #2C3E50; font-size: 24px; margin-bottom: 10px;">Welcome to Springs connect</h2>
 

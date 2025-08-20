@@ -11,7 +11,7 @@ const AuthContainer = () => {
     const [isLogin, setIsLogin] = useState(true);
 
     return (
-        <div className="min-h-screen flex flex-col md:flex-row bg-multi-gradient">
+  <div className="min-h-screen flex flex-col md:flex-row px-9 bg-multi-gradient">
             {/* Left side: Branding */}
             <div className="flex-1 flex flex-col items-start justify-between p-6 md:p-10 lg:pl-40 relative z-10">
                 <img src={assets.logo} alt="Logo" className="h-22 object-contain" />

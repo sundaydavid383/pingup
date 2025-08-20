@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Link } from "react-router-dom";
 import assets from '../assets/assets';
@@ -26,7 +25,7 @@ const RecentMessages = () => {
           <Link
             key={index}
             to={`/chatbox/${message.conversation_id}`}
-            className="flex items-start gap-1 px-2 py-2 hover:bg-slate-100"
+            className="flex items-start gap-2 px-2 py-2 hover:bg-slate-100"
           >
             {/* Sender's profile image */}
             <div className="flex-shrink-0">
@@ -39,25 +38,25 @@ const RecentMessages = () => {
 
             <div className="flex-1 border-b border-gray-100 pb-2">
               {/* Name & Timestamp */}
-              <div className="flex justify-between items-center">
-                <p className="font-medium truncate max-w-[70%]">
-                  {message.sender.full_name}
-                </p>
-                <p className="text-[12px] text-slate-400 whitespace-nowrap">
-                  {moment(message.last_message.timestamp).calendar(null, {
-                    sameDay: 'h:mm A',
-                    lastDay: '[Yesterday]',
-                    lastWeek: 'ddd',
-                    sameElse: 'MMM D'
-                  })}
-                </p>
-              </div>
+<div className="flex items-center justify-between gap-2">
+  <p className="font-medium truncate max-w-[50%]">
+    {message.sender.full_name}
+  </p>
+  <p className="text-[11px] text-slate-500 whitespace-nowrap flex-shrink-0">
+    {moment(message.last_message.timestamp).calendar(null, {
+      sameDay: 'h:mm A',
+      lastDay: '[Yesterday]',
+      lastWeek: 'ddd',
+      sameElse: 'MMM D',
+    })}
+  </p>
+</div>
 
               {/* Message text / media & Unread count */}
               <div className="flex justify-between items-center mt-1">
                 <p className="text-[14px] text-gray-500 truncate max-w-[80%]">
                   {message.last_message.type === "text" && message.last_message.text
-                    ? message.last_message.text
+                    ? <p>{message.last_message.text.slice(0, 30)}...</p>
                     : "Media"}
                 </p>
                 {message.unread_count > 0 && (

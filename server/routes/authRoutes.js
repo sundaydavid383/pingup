@@ -5,7 +5,7 @@ const { registerUser,
     loginUser,
     verifyOTP, deleteAllUsers,
     deleteUserById, resendOTP,
-    getImage,
+    uploadImage,
     checkUsernameAvailability,
     updateUser,
     getAllUser
@@ -20,5 +20,5 @@ router.delete('/delete-user/:id', deleteUserById);
 router.get('/check-username/:username', checkUsernameAvailability)
 router.put('/update/user/:userId', updateUser);
 router.get('/allusers', getAllUser);
-router.post('/upload-image', upload.single('profilePic'), getImage); // Assuming you have a getImage function to handle the image upload response
+router.post('/upload-image', upload.single('profilePic'), uploadImage); // Assuming you have a getImage function to handle the image upload response
 module.exports = router;

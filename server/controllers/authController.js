@@ -6,56 +6,90 @@ const validateRegistration = require('../validators/validateRegistration');
 const sendOTP = require('../utils/sendOtpEmail');
 
 const registerUser = async (req, res) => {
-  console.log('🔁 Received registration request:', req.body);
+        console.log("========================================");
+        console.log("📝 New REGISTRATION attempt started...");
+        console.log("========================================");
 
-  const { isValid, errors } = validateRegistration(req.body);
-  if (!isValid) return res.status(400).json({ errors });
+        try {
+          console.log("📩 Step 1: Received registration request!");
+          console.log("   👉 Incoming data:", req.body);
 
-  const {
-    name, email, password, dob, gender,
-    occupation, location, churchName, churchRole,
-    interests, bio, prayerRequest, profilePicUrl
-  } = req.body;
+          // 1. Validate registration input
+          const { isValid, errors } = validateRegistration(req.body);
+          if (!isValid) {
+            console.log("❌ Step 1 Failed: Validation errors found!");
+            console.log("   🚫 Errors:", errors);
+            return res.status(400).json({ errors });
+          }
 
-  try {
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ errors: { email: 'Email already exists' } });
-    }
+          const {
+            name, email, username, password, dob, gender,
+            occupation, location, churchName, churchRole,
+            interests, bio, prayerRequest, profilePicUrl
+          } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const { otpCode, otpExpires } = await sendOTP(email);
+          // 2. Check if user already exists
+          console.log("🔍 Step 2: Checking if email is already registered...");
+          const existingUser = await User.findOne({ email });
+          if (existingUser) {
+            console.log("❌ Step 2 Failed: Email already in use.");
+            return res.status(400).json({ errors: { email: "Email already exists" } });
+          }
 
-    const user = new User({
-      name, email, password: hashedPassword,
-      dob, gender, occupation, location,
-      churchName, churchRole, interests, bio, prayerRequest,
-      profilePicUrl,
-      currentCity: null,
-      workplace: null,
-      school: null,
-      homeTown: null,
-      relationshipStatus: null,
-      otpCode,
-      otpExpires,
-      isVerified: false,
-    });
+          console.log("✅ Step 2 Success: Email is available!");
 
-    await user.save();
-    if (process.env.NODE_ENV !== 'production') {
-      console.log(`📨 OTP for ${email}: ${otpCode}`);
-    }
+          // 3. Hash password
+          console.log("🔐 Step 3: Securing password with hashing...");
+          const hashedPassword = await bcrypt.hash(password, 10);
+          console.log("   🔒 Password hashed successfully!");
 
-    res.status(201).json({
-      message: 'User registered. Please enter the OTP sent to your email for verification.',
-      userId: user._id,
-    });
-  } catch (err) {
-    console.error('🚨 Registration error:', err);
-    res.status(500).json({ error: 'Server error. Please try again later.' });
-  }
+          // 4. Generate OTP
+          console.log("📨 Step 4: Generating OTP and sending to email...");
+          const { otpCode, otpExpires } = await sendOTP(email);
+          console.log("✅ OTP generated!");
+          if (process.env.NODE_ENV !== "production") {
+            console.log(`   🧾 OTP for ${email}: ${otpCode} (testing only)`);
+          }
+
+          // 5. Create new user
+          console.log("🛠️ Step 5: Creating new user in the database...");
+          const user = new User({
+            name, email, username, password: hashedPassword,
+            dob, gender, occupation, location,
+            churchName, churchRole, interests, bio, prayerRequest,
+            profilePicUrl,
+            currentCity: null,
+            workplace: null,
+            school: null,
+            homeTown: null,
+            relationshipStatus: null,
+            otpCode,
+            otpExpires,
+            isVerified: false,
+          });
+
+          await user.save();
+          console.log("✅ Step 5 Success: User saved to database!");
+          console.log("   👤 User ID:", user._id.toString());
+
+          // 6. Respond to client
+          console.log("🚀 Step 6: Registration completed!");
+          console.log("   🎊 User must verify email with OTP to finish setup.");
+          console.log("========================================\n");
+
+          res.status(201).json({
+            message: "User registered. Please enter the OTP sent to your email for verification.",
+            userId: user._id,
+          });
+
+        } catch (err) {
+          console.log("🚨 Unexpected ERROR during registration!");
+          console.error("   ❌ Error details:", err);
+          console.log("========================================\n");
+
+          res.status(500).json({ error: "Server error. Please try again later." });
+        }
 };
-
 
 const resendOTP = async (req, res) => {
   const { userId } = req.body;
@@ -97,7 +131,9 @@ const verifyOTP = async (req, res) => {
     const { userId, otp } = req.body;
     console.log('🔁 Verifying OTP for user:', userId);
 
-    const user = await User.findById(userId);
+    // 🔑 Use findById if userId = MongoDB _id
+    const user = await User.findById(userId).select("+otpCode +otpExpires");
+
     if (!user) {
       console.log('❌ User not found');
       return res.status(404).json({ message: 'User not found' });
@@ -113,14 +149,14 @@ const verifyOTP = async (req, res) => {
       return res.status(400).json({ message: 'Invalid OTP' });
     }
 
-    if (user.otpExpires < new Date()) {
+    if (user.otpExpires < Date.now()) {
       console.log(`⏰ OTP expired at ${user.otpExpires}, now is ${new Date()}`);
       return res.status(400).json({ message: 'OTP expired' });
     }
 
     user.isVerified = true;
-    user.otpCode = null;
-    user.otpExpires = null;
+    user.otpCode = undefined;
+    user.otpExpires = undefined;
     await user.save();
 
     console.log('✅ OTP verified and user updated:', userId);
@@ -129,7 +165,7 @@ const verifyOTP = async (req, res) => {
       expiresIn: "7d",
     });
 
-    const { password, ...userData } = user.toObject();
+    const { password, otpCode, otpExpires, ...userData } = user.toObject();
 
     return res.status(200).json({
       success: true,
@@ -145,20 +181,21 @@ const verifyOTP = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
-  console.log(req.body)
-  try {
+  console.log("========================================");
+  console.log("🚀 New LOGIN attempt started...");
+  console.log("========================================");
 
+  try {
     const { email, password } = req.body;
 
-    console.log("📩 Incoming login request:", { email, password });
+    console.log("📩 Step 1: Received login request!");
+    console.log("   👉 Email entered:", email ? email : "❌ (missing)");
+    console.log("   👉 Password entered:", password ? "✅ (provided)" : "❌ (missing)");
 
     // 1. Validate fields
     if (!email || !password) {
-      console.log("⚠️ Missing fields:", {
-        emailMissing: !email,
-        passwordMissing: !password,
-      });
-
+      console.log("⚠️ Step 1 Failed: Some fields are missing!");
+      console.log("   🚫 Cannot continue without all fields.");
       return res.status(400).json({
         success: false,
         errors: {
@@ -169,45 +206,55 @@ const loginUser = async (req, res) => {
     }
 
     // 2. Check if user exists
-    console.log("🔍 Checking user in DB...");
-    const user = await User.findOne({ email });
+    console.log("🔍 Step 2: Looking for user in the database...");
+    const user = await User.findOne({ email }).select("+password");  // <-- include password
 
     if (!user) {
-      console.log("❌ User not found with email:", email);
+      console.log("❌ Step 2 Failed: No user found with that email.");
+      console.log("👉 Entered email:", email);
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
 
-    console.log("✅ User found:", {
-      id: user._id,
+    console.log("✅ Step 2 Success: User found!");
+    console.log("   👤 User:", {
+      id: user._id.toString(),
       name: user.name,
       email: user.email,
     });
 
     // 3. Compare passwords
-    console.log("🔐 Comparing password...");
+    console.log("🔐 Step 3: Checking if passwords match...");
+    console.log("   👉 Comparing entered password with stored hash...");
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      console.log("❌ Password mismatch for:", email);
+      console.log("❌ Step 3 Failed: Password did not match!");
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
 
+    console.log("✅ Step 3 Success: Passwords match perfectly!");
+
     // 4. Create JWT token
-    console.log("🔑 Password matched. Generating token...");
+    console.log("🔑 Step 4: Generating secure access token...");
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
 
+    console.log("   🎉 Token generated successfully!");
+
     // 5. Prepare response
     const { password: _, ...userData } = user.toObject();
 
-    console.log("🚀 Login successful. Sending response...");
+    console.log("🚀 Step 5: Login completed!");
+    console.log("   🎊 User is now logged in successfully.");
+    console.log("========================================\n");
+
     return res.status(200).json({
       success: true,
       message: "Login successful",
@@ -216,7 +263,10 @@ const loginUser = async (req, res) => {
     });
 
   } catch (err) {
-    console.log("🚨 Login error:", err);
+    console.log("🚨 Unexpected ERROR during login!");
+    console.error("   ❌ Error details:", err);
+    console.log("========================================\n");
+
     return res.status(500).json({
       success: false,
       error: "Server error. Please try again later.",
@@ -274,16 +324,21 @@ const deleteAllUsers = async (req, res) => {
   }
 };
 
-const getImage = async (req, res) => {
+const uploadImage = async (req, res) => {
   try {
-    const imageUrl = req.file.path; // This is the Cloudinary URL
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
+
+    const imageUrl = req.file.path; // Cloudinary public URL
     console.log("✅ Image uploaded successfully:", imageUrl);
-    res.status(200).json({ imageUrl });
+
+    res.status(200).json({ url: imageUrl }); // use a single, consistent key
   } catch (err) {
-    console.log("unable to upload image on cloundinary", err);
-    res.status(500).json({ message: 'Image upload failed' });
+    console.error("❌ Unable to upload image on Cloudinary:", err);
+    res.status(500).json({ message: "Image upload failed", error: err.message });
   }
-}
+};
 const checkUsernameAvailability = async (req, res) => {
   try {
     const { username } = req.params;
@@ -308,7 +363,8 @@ const checkUsernameAvailability = async (req, res) => {
 };
 const updateUser = async (req, res) => {
   const { userId } = req.params;
-  console.log("Updating user:", userId, "with data:", req.body);
+  console.log("🔵 Step 1: Received request to update user:", userId);
+  console.log("📝 Request body data:", req.body);
 
   try {
     const allowedUpdates = [
@@ -330,13 +386,20 @@ const updateUser = async (req, res) => {
       "profilePicUrl",
     ];
 
+    console.log("🔵 Step 2: Filtering allowed updates...");
     const updates = {};
     for (let key of allowedUpdates) {
       if (req.body[key] !== undefined) {
         updates[key] = req.body[key];
+        console.log(`✅ Allowed update added: ${key} =`, req.body[key]);
+      } else {
+        console.log(`⏩ Skipping key: ${key} (not in request)`);
       }
     }
 
+    console.log("🔵 Step 3: Final updates object:", updates);
+
+    console.log("🔵 Step 4: Attempting database update...");
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updates },
@@ -344,17 +407,21 @@ const updateUser = async (req, res) => {
     );
 
     if (!updatedUser) {
+      console.warn("⚠️ Step 5: No user found with ID:", userId);
       return res.status(404).json({ message: "User not found" });
     }
+
+    console.log("✅ Step 6: User updated successfully:", updatedUser);
 
     return res.status(200).json({
       message: "User updated successfully",
       user: updatedUser,
     });
   } catch (error) {
-    console.error("Update error:", error);
+    console.error("❌ Step X: Update error occurred:", error);
 
     if (error.code === 11000 && error.keyPattern?.email) {
+      console.error("❌ Duplicate email error:", error.keyValue);
       return res.status(400).json({ message: "Email already in use" });
     }
 
@@ -364,4 +431,8 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, verifyOTP, deleteAllUsers, deleteUserById, resendOTP, getImage, checkUsernameAvailability, updateUser, getAllUser };
+module.exports = { registerUser, loginUser, 
+  verifyOTP, deleteAllUsers,
+   deleteUserById, resendOTP, 
+  uploadImage, checkUsernameAvailability,
+   updateUser, getAllUser };

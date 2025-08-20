@@ -12,19 +12,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { user } = useAuth();
 
   return (
-    <div
-      className={`w-60 xl:w-72 flex flex-col justify-between items-center 
-      max-sm:absolute top-0 bottom-0 z-20 ${
-        sidebarOpen ? 'translate-x-0' : '-max-sm:-translate-x-full'
-      }  sticky transition-all duration-300 ease-in-out sm:translate-x-0`}
-      style={{
-        backgroundColor: 'var(--form-bg)',
-        borderRight: '1px solid var(--input-border)',
-        color: 'var(--text-main)',
-      }}
-    >
+   <div
+  className={`w-60 xl:w-72 flex flex-col justify-between items-center 
+  max-sm:fixed top-0 bottom-0 z-20 ${
+    sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+  } transition-all duration-300 ease-in-out sm:translate-x-0 sm:sticky sm:top-0`}
+  style={{
+    backgroundColor: 'var(--form-bg)',
+    borderRight: '1px solid var(--input-border)',
+    color: 'var(--text-main)',
+    height: '100vh', // keep it full height
+  }}
+>
       {/* TOP SECTION */}
-      <div className="w-full px-4 pt-4">
+      <div className="w-full px-4 pt-4 overflow-y-auto flex-1">
         <img
           onClick={() => navigate('/')}
           src={assets.logo}

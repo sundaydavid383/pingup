@@ -125,7 +125,7 @@ const LoginForm = ({ onSwitchToSignUp }) => {
           Don’t have an account?{" "}
           <button
             type="button"
-            className="text-[var(--primary)] font-medium underline"
+            className="text-[var(--text-main)] font-medium underline"
             onClick={onSwitchToSignUp}
           >
             Sign up here

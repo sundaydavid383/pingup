@@ -46,7 +46,6 @@ const SignUpForm = ({ onSwitchToLogin }) => {
     gender: '',
     location: '',
     churchName: '',
-    churchRole: '',
     prayerRequest: '',
     interests: '',
     bio: '',
@@ -65,11 +64,16 @@ const SignUpForm = ({ onSwitchToLogin }) => {
 
 const checkIfUserNameExist = async (username) => {
   try {
+    setLoading(true);
+    setLoadingText("Verifing if username has not been used...");
     const response = await axios.get(`http://localhost:5000/api/auth/check-username/${username}`);
     return response.data.exists; // true if taken, false if available
   } catch (error) {
     console.error("Error checking username:", error);
     return true; // assume taken if error, to be safe
+  }
+  finally{
+    setLoading(false)
   }
 };
    
@@ -89,7 +93,7 @@ const checkIfUserNameExist = async (username) => {
 
               setFormData(prev => ({
                 ...prev,
-                profilePicUrl: res.data.imageUrl
+                profilePicUrl: res.data.url
               }));
 
               setAlert({
@@ -121,7 +125,6 @@ const checkIfUserNameExist = async (username) => {
       occupation,
       location,
       churchName,
-      churchRole,
       interests,
       bio,
       prayerRequest,
@@ -141,11 +144,9 @@ const checkIfUserNameExist = async (username) => {
             if (!email.trim()) return 'Email is required';
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()))
         return 'Enter a valid email address';
-      if(!username || username.length < 3) return "Please enter a valid user name of more than 3 characters" 
 
-        const isTaken = await checkIfUserNameExist(formData.username);
-    if (isTaken) return "Username already exists. Please choose another.";
-      
+
+   
     
       if (!password) return 'Password is required';
       if (password.length < 6)
@@ -197,7 +198,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
     //       return 'Church name must be at least 2 letters and only contain letters and spaces';
     //   }
 
-    //   if (churchRole && churchRole.trim()) {
+    //   if ( && .trim()) {
     //     if (!/^[a-zA-Z\s]{2,30}$/.test(churchRole.trim()))
     //       return 'Church role must be 2–30 characters and only letters/spaces';
     //   }
@@ -222,6 +223,10 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
 
     // STEP 4: BIO
     if (step === 3) {
+     if(!username || username.length < 3) return "Please enter a valid user name of more than 3 characters" 
+    const isTaken = await checkIfUserNameExist(formData.username);
+    if (isTaken) return "Username already exists. Please choose another.";
+    
       if (bio && bio.trim()) {
         if (bio.trim().length < 10)
           return 'Bio must be at least 10 characters';
@@ -235,7 +240,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
 
 
   const handleNext = async () => {
-    const error = validateStep();
+    const error = await validateStep();
     if (error) {
       setAlert({ show: true, message: error, type: 'error' });
       return;
@@ -260,7 +265,6 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
           occupation: formData.occupation,
           location: formData.location,
           churchName: formData.churchName,
-          churchRole: formData.churchRole,
           interests: formData.interests,
           bio: formData.bio,
           prayerRequest: formData.prayerRequest,
@@ -332,7 +336,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
           exit={{ x: direction > 0 ? -100 : 100, opacity: 0 }}
           transition={{ duration: 0.4 }}
           onSubmit={(e) => e.preventDefault()}
-          className="relative z-10 p-6 sm:p-10 text-[var(--text-main)] space-y-5"
+          className="relative z-10 p-6 sm:p-10 text-[var(--text-main)] space-y-2"
         >
           <h2 className="text-2xl font-bold text-center" style={{ color: 'var(--color-text)' }}>
             {steps[step]}
@@ -360,15 +364,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
                 required
                 className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
               />
-            <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            required
-            className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
-          />
+          
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
@@ -446,13 +442,13 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
                 className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
               />
               <input
-  name="dob"
-  type="date"
-  placeholder="Date of Birth"
-  value={formData.dob}
-  onChange={handleChange}
-  className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
-/>
+                name="dob"
+                type="date"
+                placeholder="Date of Birth"
+                value={formData.dob}
+                onChange={handleChange}
+                className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
+              />
               <select
                 name="gender"
                 value={formData.gender}
@@ -521,15 +517,15 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
                 <option value="Bible Study" className="text-black">Bible Study</option>
                 <option value="Tech & Media" className="text-black">Tech & Media</option>
                 <option value="Sports" className="text-black">Sports</option>
-                <option value="Creative Arts" className="text-black">Creative Arts</option>
                 <option value="Youth Programs" className="text-black">Youth Programs</option>
                 <option value="Prayer & Counseling" className="text-black">Prayer & Counseling</option>
                 <option value="I'm just exploring" className="text-black">I'm just exploring</option>
               </select>
+                
             </div>
           )}
 
-          {step === 3 && (
+          {step === 3 && (<>
             <textarea
               name="bio"
               placeholder="Short bio or testimony (optional)"
@@ -538,7 +534,16 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
               rows={4}
               className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
             />
-          )}
+            <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={formData.username}
+            onChange={handleChange}
+            required
+            className="w-full p-3 rounded-xl bg-[var(--input-bg)] shadow-[var(--input-shadow)] placeholder-white/70 focus:outline-none"
+          />
+          </>)}
           {step === 3 && showOtpInput ? (
             <div className="mt-6 space-y-3">
               <input
@@ -579,7 +584,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
                   } catch (err) {
                     setAlert({
                       show: true,
-                      message: err.response?.data?.error || 'OTP verification failed',
+                      message: err.response?.data?.message || 'OTP verification failed',
                       type: 'error',
                     });
                   }
@@ -593,7 +598,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
               </button>
               <button
                 type="button"
-                className="w-full text-sm text-[var(--primary)] underline hover:text-white transition"
+                className="w-full text-sm text-[var(--text-main)] underline hover:text-white transition"
                 onClick={async () => {
                   try {
                     setLoading(true);
@@ -652,7 +657,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
             Already have an account?{" "}
             <button
               type="button"
-              className="text-[var(--primary)] font-medium underline"
+              className="text-[var(--text-main)] font-medium underline"
               onClick={onSwitchToLogin}
             >
               Log in here
