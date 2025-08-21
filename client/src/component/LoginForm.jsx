@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import CustomAlert from "./shared/CustomAlert";
 import Loading from "./shared/Loading";
 import { useAuth } from "../context/AuthContext";
+import location from "../utils/location"
 
 const LoginForm = ({ onSwitchToSignUp }) => {
   const { login } = useAuth();
@@ -37,10 +38,12 @@ const LoginForm = ({ onSwitchToSignUp }) => {
     setLoading(true);
 
     try {
+      const locationData = await location();
+      const body = {...locationData, ...formData}
       const res = await fetch("http://localhost:5000/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();

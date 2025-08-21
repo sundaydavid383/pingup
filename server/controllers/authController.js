@@ -12,7 +12,7 @@ const registerUser = async (req, res) => {
 
         try {
           console.log("📩 Step 1: Received registration request!");
-          console.log("   👉 Incoming data:", req.body);
+          console.log("👉 Incoming data:", req.body);
 
           // 1. Validate registration input
           const { isValid, errors } = validateRegistration(req.body);
@@ -25,16 +25,17 @@ const registerUser = async (req, res) => {
           const {
             name, email, username, password, dob, gender,
             occupation, location, churchName, churchRole,
-            interests, bio, prayerRequest, profilePicUrl
+            interests, bio, prayerRequest, profilePicUrl,
+            currentCity, country, latitude, longitude
           } = req.body;
 
-          // 2. Check if user already exists
-          console.log("🔍 Step 2: Checking if email is already registered...");
-          const existingUser = await User.findOne({ email });
-          if (existingUser) {
-            console.log("❌ Step 2 Failed: Email already in use.");
-            return res.status(400).json({ errors: { email: "Email already exists" } });
-          }
+           // 2. Check if user already exists
+           console.log("🔍 Step 2: Checking if email is already registered...");
+           const existingUser = await User.findOne({ email });
+           if (existingUser) {
+             console.log("❌ Step 2 Failed: Email already in use.");
+             return res.status(400).json({ errors: { email: "Email already exists" } });
+           }
 
           console.log("✅ Step 2 Success: Email is available!");
 
@@ -58,7 +59,6 @@ const registerUser = async (req, res) => {
             dob, gender, occupation, location,
             churchName, churchRole, interests, bio, prayerRequest,
             profilePicUrl,
-            currentCity: null,
             workplace: null,
             school: null,
             homeTown: null,
@@ -66,6 +66,14 @@ const registerUser = async (req, res) => {
             otpCode,
             otpExpires,
             isVerified: false,
+
+            ...(currentCity && country ? {currentCity, country} : {}),
+            ...(latitude && longitude ?
+              { locationCoords : {
+              type: "Point",
+              coordinates: [longitude, latitude],
+            }}
+             : {}),
           });
 
           await user.save();
@@ -83,12 +91,22 @@ const registerUser = async (req, res) => {
           });
 
         } catch (err) {
-          console.log("🚨 Unexpected ERROR during registration!");
-          console.error("   ❌ Error details:", err);
-          console.log("========================================\n");
+  console.log("🚨 Unexpected ERROR during registration!");
+  console.error("   ❌ Error details:", err);
 
-          res.status(500).json({ error: "Server error. Please try again later." });
-        }
+  if (err.code === 11000) {
+    // Handle duplicate key error gracefully
+    const duplicateField = Object.keys(err.keyPattern)[0]; 
+    const duplicateValue = err.keyValue[duplicateField];
+    console.log(`   ⚠️ Duplicate ${duplicateField}: ${duplicateValue}`);
+
+    return res.status(400).json({
+      errors: { [duplicateField]: `${duplicateField} already exists` },
+    });
+  }
+
+  res.status(500).json({ error: "Server error. Please try again later." });
+}
 };
 
 const resendOTP = async (req, res) => {
@@ -125,6 +143,7 @@ const resendOTP = async (req, res) => {
     return res.status(500).json({ message: 'Failed to resend OTP. Please try again later.' });
   }
 }
+
 
 const verifyOTP = async (req, res) => {
   try {
@@ -180,22 +199,23 @@ const verifyOTP = async (req, res) => {
   }
 };
 
+
 const loginUser = async (req, res) => {
   console.log("========================================");
   console.log("🚀 New LOGIN attempt started...");
   console.log("========================================");
 
   try {
-    const { email, password } = req.body;
+    // Step 1: Destructure body
+    const { email, password, city, country, latitude, longitude } = req.body;
 
     console.log("📩 Step 1: Received login request!");
     console.log("   👉 Email entered:", email ? email : "❌ (missing)");
     console.log("   👉 Password entered:", password ? "✅ (provided)" : "❌ (missing)");
+    console.log("   🌍 Location data received:", { city, country, latitude, longitude });
 
-    // 1. Validate fields
     if (!email || !password) {
-      console.log("⚠️ Step 1 Failed: Some fields are missing!");
-      console.log("   🚫 Cannot continue without all fields.");
+      console.log("❌ Step 2: Missing email or password, sending 400...");
       return res.status(400).json({
         success: false,
         errors: {
@@ -205,56 +225,61 @@ const loginUser = async (req, res) => {
       });
     }
 
-    // 2. Check if user exists
-    console.log("🔍 Step 2: Looking for user in the database...");
-    const user = await User.findOne({ email }).select("+password");  // <-- include password
+    // Step 3: Find user
+    console.log("🔎 Step 3: Looking for user in database...");
+    const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      console.log("❌ Step 2 Failed: No user found with that email.");
-      console.log("👉 Entered email:", email);
+      console.log("❌ Step 3 FAILED: User not found!");
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
+    console.log("✅ Step 3 SUCCESS: User found with ID:", user._id);
 
-    console.log("✅ Step 2 Success: User found!");
-    console.log("   👤 User:", {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-    });
-
-    // 3. Compare passwords
-    console.log("🔐 Step 3: Checking if passwords match...");
-    console.log("   👉 Comparing entered password with stored hash...");
+    // Step 4: Compare passwords
+    console.log("🔐 Step 4: Comparing passwords...");
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
-      console.log("❌ Step 3 Failed: Password did not match!");
+      console.log("❌ Step 4 FAILED: Password mismatch!");
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
       });
     }
+    console.log("✅ Step 4 SUCCESS: Password matched!");
 
-    console.log("✅ Step 3 Success: Passwords match perfectly!");
+    // Step 5: Update location fields
+    console.log("📍 Step 5: Updating user location info...");
+              if (city && country) {
+          user.currentCity = city;
+          user.country = country;
+        }
 
-    // 4. Create JWT token
-    console.log("🔑 Step 4: Generating secure access token...");
+        if (latitude && longitude) {
+          user.locationCoords = {
+            type: "Point",
+            coordinates: [longitude, latitude],
+          };
+        }
+    await user.save();
+    console.log("✅ Step 5 SUCCESS: Location info updated!", user);
+
+    // Step 6: Generate token
+    console.log("🔑 Step 6: Generating JWT...");
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
+    console.log("✅ Step 6 SUCCESS: Token generated!");
 
-    console.log("   🎉 Token generated successfully!");
-
-    // 5. Prepare response
+    // Step 7: Prepare response data
     const { password: _, ...userData } = user.toObject();
+    console.log("📦 Step 7: Prepared response user data (password excluded).");
 
-    console.log("🚀 Step 5: Login completed!");
-    console.log("   🎊 User is now logged in successfully.");
-    console.log("========================================\n");
-
+    // Final response
+    console.log("🎉 LOGIN SUCCESSFUL! Sending response...");
     return res.status(200).json({
       success: true,
       message: "Login successful",
@@ -263,10 +288,7 @@ const loginUser = async (req, res) => {
     });
 
   } catch (err) {
-    console.log("🚨 Unexpected ERROR during login!");
-    console.error("   ❌ Error details:", err);
-    console.log("========================================\n");
-
+    console.error("🚨 Unexpected ERROR during login!", err);
     return res.status(500).json({
       success: false,
       error: "Server error. Please try again later.",
@@ -283,7 +305,7 @@ const getAllUser = async (req, res) => {
       return res.status(400).json({ message: "no user avialable" });
     }
     console.log("successfully gotten all users", allUsers);
-    return res.status(400).json({data:allUsers, message: "successfully gotten all users" });
+    return res.status(200).json({data:allUsers, message: "successfully gotten all users" });
   }
 
   catch (err) {
@@ -291,6 +313,7 @@ const getAllUser = async (req, res) => {
     return res.status(200).json({ message: "unable to fetch all user" })
   }
 }
+
 
 const deleteUserById = async (req, res) => {
   const { id } = req.params;
@@ -310,6 +333,7 @@ const deleteUserById = async (req, res) => {
   }
 };
 
+
 const deleteAllUsers = async (req, res) => {
   try {
     const result = await User.deleteMany({});
@@ -323,6 +347,7 @@ const deleteAllUsers = async (req, res) => {
     res.status(500).json({ error: 'Server error while deleting users' });
   }
 };
+
 
 const uploadImage = async (req, res) => {
   try {
@@ -339,6 +364,8 @@ const uploadImage = async (req, res) => {
     res.status(500).json({ message: "Image upload failed", error: err.message });
   }
 };
+
+
 const checkUsernameAvailability = async (req, res) => {
   try {
     const { username } = req.params;
@@ -361,6 +388,8 @@ const checkUsernameAvailability = async (req, res) => {
     return res.status(500).json({ error: "Server error. Please try again later." });
   }
 };
+
+
 const updateUser = async (req, res) => {
   const { userId } = req.params;
   console.log("🔵 Step 1: Received request to update user:", userId);

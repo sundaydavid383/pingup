@@ -25,7 +25,7 @@ const privacySettingsSchema = new Schema({
 const userSchema = new Schema({
   name: { type: String, required: true, trim: true },
   username: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
+  email: { type: String, required: true,  unique: true,  lowercase: true, trim: true, index: true },
   password: { type: String, required: true, select: false },
 
   role: { type: String, enum: ['user','moderator','admin'], default: 'user' },
@@ -41,6 +41,7 @@ const userSchema = new Schema({
   dob: Date,
   gender: String,
   occupation: String,
+  country: String,
 
   // 🌍 Location fields
   location: String, // human-friendly

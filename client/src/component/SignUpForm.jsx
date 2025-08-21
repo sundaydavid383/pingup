@@ -7,6 +7,7 @@ import '../styles/ui.css';
 import './signUpForm.css';
 import axios from 'axios';
 import { useAuth } from "../context/AuthContext";
+import location from "../utils/location"
 
 
 const steps = [
@@ -255,6 +256,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
       setLoadingText("registering user...")
 
       try {
+        const {latitude, longitude, city, country} = await location();
         const response = await axios.post("http://localhost:5000/api/auth/register", {
           name: formData.name,
           email: formData.email,
@@ -269,6 +271,10 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
           bio: formData.bio,
           prayerRequest: formData.prayerRequest,
           profilePicUrl: formData.profilePicUrl,
+          currentCity: city,
+          country: country,
+          latitude,
+          longitude
         });
 
 

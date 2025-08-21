@@ -21,7 +21,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     backgroundColor: 'var(--form-bg)',
     borderRight: '1px solid var(--input-border)',
     color: 'var(--text-main)',
-    height: '100vh', // keep it full height
+    height: '100vh', 
+    backdropFilter: 'blur(12px)', 
+    WebkitBackdropFilter: 'blur(12px)',
   }}
 >
       {/* TOP SECTION */}

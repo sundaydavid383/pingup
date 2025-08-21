@@ -12,13 +12,30 @@ const UserProfileButton = () => {
   };
 
   const handleConfirm = () => {
-    logout(); // call the logout function passed from context
+    logout(); 
     setShowNotifier(false);
   };
 
   const handleCancel = () => {
     setShowNotifier(false);
   };
+
+  
+
+const getFirstLetterOfNameForFallbackAvatar  = (name) => {
+  if (!name) return '?';
+
+  const parts = name.trim().split(" "); // split by space
+  if (parts.length === 1) {
+    // only one name (e.g. "Sunday")
+    return parts[0].charAt(0).toUpperCase();
+  } else {
+    // at least two parts (e.g. "Sunday David")
+    const firstInitial = parts[0].charAt(0).toUpperCase();
+    const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+    return firstInitial + lastInitial;
+  }
+};
 
   return (
     <div className="flex items-center justify-between w-full p-2">
@@ -27,11 +44,19 @@ const UserProfileButton = () => {
         className="flex items-center gap-3 cursor-pointer"
         onClick={() => setModalOpen(true)}
       >
-        <img
-          src={user.profilePicUrl}
-          alt={user.name}
-          className="w-10 h-10 rounded-full object-cover border border-[var(--input-border)]"
-        />
+          {user?.profilePicUrl ? (
+          <img
+            src={user.profilePicUrl}
+            alt={user.name}
+            className="w-10 h-10 rounded-full object-cover border border-[var(--input-border)]"
+          />
+        ) : (
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--primary)] text-white font-semibold border border-[var(--input-border)]"
+          >
+            {getFirstLetterOfNameForFallbackAvatar(user?.name)}
+          </div>
+        )}
         <div className="flex flex-col overflow-hidden">
           <p className="text-sm font-semibold truncate text-[var(--text-main)] capitalize">
             {user.name}

@@ -142,6 +142,22 @@ const handleSave = async () => {
   }
 };
 
+
+const getFirstLetterOfNameForFallbackAvatar  = (name) => {
+  if (!name) return '?';
+
+  const parts = name.trim().split(" "); // split by space
+  if (parts.length === 1) {
+    // only one name (e.g. "Sunday")
+    return parts[0].charAt(0).toUpperCase();
+  } else {
+    // at least two parts (e.g. "Sunday David")
+    const firstInitial = parts[0].charAt(0).toUpperCase();
+    const lastInitial = parts[parts.length - 1].charAt(0).toUpperCase();
+    return firstInitial + lastInitial;
+  }
+};
+
   return (
     <div
       className="overflow-y-auto hidden_scrollbar fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center px-4"
@@ -176,11 +192,19 @@ const handleSave = async () => {
         <div className="overflow-y-auto p-6 pb-32">
           <div className="flex flex-col items-center mb-6">
             <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-[var(--input-border)] mb-2">
-              <img
-                src={preview || "/placeholder-profile.png"}
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
+             {preview && preview.length > 0 ? (
+                  <img
+                    src={preview}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--primary)] text-white font-semibold border border-[var(--input-border)]"
+                  >
+                    {getFirstLetterOfNameForFallbackAvatar(user?.name) || "?"}
+                  </div>
+                )}
               {uploading && (
                 <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-xs text-white">
                   Uploading...
