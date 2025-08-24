@@ -7,7 +7,7 @@ import Loading from '../component/shared/Loading';
 
 const Layout = () => {
   const {user} = useAuth()
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return user ? (
     <div className='w-full flex h-screen relative'>

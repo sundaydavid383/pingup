@@ -11,7 +11,7 @@ const MenuItems = ({ setSidebarOpen }) => {
   key={to}
   to={to}
   end={to === '/'}
-  onClick={() => setSidebarOpen(false)}
+  // onClick={() => setSidebarOpen(false)}
   className={({ isActive }) =>
     `pl-3 py-[7px] flex items-center gap-2 rounded-md text-sm transition-transform duration-500 ease-in-out ${
       isActive

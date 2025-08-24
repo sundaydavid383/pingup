@@ -9,8 +9,16 @@ const sessionSchema = new Schema({
   createdAt: { type: Date, default: Date.now }
 }, { _id: false });
 
+const notificationSchema = new Schema({
+  type: { type: String, enum: ['connection', 'message', 'system', 'custom'], default: 'custom' },
+  text: { type: String, required: true },
+  isRead: { type: Boolean, default: false },
+  createdAt: { type: Date, default: Date.now }
+}, { _id: true });
+
 const notificationSettingsSchema = new Schema({
   email: { type: Boolean, default: true },
+  phone: { type: Boolean, default: true }, // added
   push:  { type: Boolean, default: true },
   mentions: { type: Boolean, default: true }
 }, { _id: false });
@@ -26,7 +34,7 @@ const userSchema = new Schema({
   name: { type: String, required: true, trim: true },
   username: { type: String, required: true, unique: true, lowercase: true, trim: true, index: true },
   email: { type: String, required: true,  unique: true,  lowercase: true, trim: true, index: true },
-  password: { type: String, required: true, select: false },
+  password: { type: String, required: false, select: false },
 
   role: { type: String, enum: ['user','moderator','admin'], default: 'user' },
   provider: { type: String, enum: ['local','google','facebook'], default: 'local' },
@@ -61,7 +69,6 @@ const userSchema = new Schema({
       'Married',
       'Prefer not to say', 
     ],
-    default: 'Single'
   },
 
   // ✅ Church-related fields
@@ -106,6 +113,7 @@ const userSchema = new Schema({
 
   // 📊 Sessions / analytics / preferences
   sessions: [sessionSchema],
+  notificationSchema: {type: [notificationSchema], default: ()=> ({}) },
   notificationSettings: { type: notificationSettingsSchema, default: () => ({}) },
   privacySettings: { type: privacySettingsSchema, default: () => ({}) },
 

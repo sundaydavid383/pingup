@@ -118,10 +118,11 @@ const googleRegister = async (req, res) => {
     console.log("[Step 1] Raw request body:", req.body);
 
     
-    const { name, email, profilePicUrl, googleId } = req.body;
+    const { name, email, username, profilePicUrl, googleId } = req.body;
     console.log("[Step 2] Extracted values:", {
       name,
       email,
+      username,
       profilePicUrl,
       googleId,
     });
@@ -143,6 +144,7 @@ const googleRegister = async (req, res) => {
       user = new User({
         name,
         email,
+        username,
         profilePicUrl,
         password: null, 
         isVerified: true, 

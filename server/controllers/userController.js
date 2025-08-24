@@ -2,70 +2,80 @@
 const User = require('../models/User');
 const Connection = require('../models/Connections')
 
+
+const totalUser = async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments({}); // count all users
+    res.json({ success: true, totalUsers });
+  } catch (err) {
+    console.error("❌ Error fetching total users:", err);
+    res.status(500).json({ success: false, error: "Server error" });
+  }
+}
 // get user location
 const getlocation = async (req, res) => {
-  console.log("=== [getlocation] Function invoked ===");
+        console.log("=== [getlocation] Function invoked ===");
 
-  try {
-    // 1. Log raw incoming request data
-    console.log("[Step 1] Raw request query:", req.query);
+        try {
+          // 1. Log raw incoming request data
+          console.log("[Step 1] Raw request query:", req.query);
 
-    // 2. Extract values from query
-    const { userId, currentCity, country, latitude, longitude } = req.query;
-    console.log("[Step 2] Extracted values:", {
-      userId,
-      currentCity,
-      country,
-      latitude,
-      longitude,
-    });
+          // 2. Extract values from query
+          const { userId, currentCity, country, latitude, longitude } = req.query;
+          console.log("[Step 2] Extracted values:", {
+            userId,
+            currentCity,
+            country,
+            latitude,
+            longitude,
+          });
 
-    // 3. Validate input (check if userId is provided)
-    if (!userId) {
-      console.warn("[Step 3] Validation failed: No userId provided");
-      return res.status(400).json({ message: "User ID is required" });
-    }
-    console.log("[Step 3] Validation passed: userId exists");
+          // 3. Validate input (check if userId is provided)
+          if (!userId) {
+            console.warn("[Step 3] Validation failed: No userId provided");
+            return res.status(400).json({ message: "User ID is required" });
+          }
+          console.log("[Step 3] Validation passed: userId exists");
 
-    // 4. Prepare the update object (only include fields that were actually provided)
-    const updateFields = {};
-    if (currentCity) updateFields.currentCity = currentCity;
-    if (country) updateFields.country = country;
-    if (latitude) updateFields.latitude = latitude;
-    if (longitude) updateFields.longitude = longitude;
+          // 4. Prepare the update object (only include fields that were actually provided)
+          const updateFields = {};
+          if (currentCity) updateFields.currentCity = currentCity;
+          if (country) updateFields.country = country;
+          if (latitude) updateFields.latitude = latitude;
+          if (longitude) updateFields.longitude = longitude;
 
-    console.log("[Step 4] Prepared update fields:", updateFields);
+          console.log("[Step 4] Prepared update fields:", updateFields);
 
-    // 5. Attempt to update the user in the database
-    console.log(`[Step 5] Updating user with ID: ${userId}`);
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      updateFields,
-      { new: true }
-    );
+          // 5. Attempt to update the user in the database
+          console.log(`[Step 5] Updating user with ID: ${userId}`);
+          const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            updateFields,
+            { new: true }
+          );
 
-    // 6. Check if user was found and updated
-    if (!updatedUser) {
-      console.warn(`[Step 6] No user found with ID: ${userId}`);
-      return res.status(404).json({ message: "User not found" });
-    }
-    console.log("[Step 6] User found and updated successfully:", updatedUser);
+          // 6. Check if user was found and updated
+          if (!updatedUser) {
+            console.warn(`[Step 6] No user found with ID: ${userId}`);
+            return res.status(404).json({ message: "User not found" });
+          }
+          console.log("[Step 6] User found and updated successfully:", updatedUser);
 
-    // 7. Send response back to client
-    res.json({
-      message: "Location updated successfully",
-      user: updatedUser,
-    });
-    console.log("[Step 7] Response sent to client");
+          // 7. Send response back to client
+          res.json({
+            message: "Location updated successfully",
+            user: updatedUser,
+          });
+          console.log("[Step 7] Response sent to client");
 
-  } catch (err) {
-    // 8. Catch and log any errors
-    console.error("❌ [Error] Failed to update user location:", err.message);
-    res.status(500).json({ message: "Server error" });
-  }
+        } catch (err) {
+          // 8. Catch and log any errors
+          console.error("❌ [Error] Failed to update user location:", err.message);
+          res.status(500).json({ message: "Server error" });
+        }
 
-  console.log("=== [getlocation] Function execution completed ===\n");
-};
+        console.log("=== [getlocation] Function execution completed ===\n");
+      };
 
 // 🔍 SEARCH CONTROLLER
 const searchUser = async (req, res) => {
@@ -318,7 +328,13 @@ const sendConnectionRequest = async (req, res) => {
         from_user_id: userId,
         to_user_id: id,
       });
-
+       
+        await sendNotification({
+        userId: id, // recipient
+        type: "connection",
+        subject: "New Connection Request on SpringsConnect",
+        text: `Hi ${toUser.name}, you have received a new connection request from ${user.name}. Check your connection list to view the request and take action.`,
+      });
       console.log("✅ Step 7: Connection request created successfully.");
       return res.json({
         success: true,
@@ -432,10 +448,112 @@ const getUserConnections = async (req, res) => {
   }
 };
 
+
+const acceptConnectionRequest = async (req, res) => {
+  try {
+    console.log("▶️ Step 1: Controller called with query:", req.query);
+
+    // Extract query params
+    const { userId, id } = req.query;
+
+    if (!userId || !id) {
+      console.log("⚠️ Step 2: Missing required params (userId or id).");
+      return res.status(400).json({
+        success: false,
+        message: "userId and id are required",
+      });
+    }
+    console.log("✅ Step 2: Params received -> userId:", userId, "id:", id);
+
+    // Fetch users
+    console.log("⏳ Step 3: Fetching users...");
+    const user = await User.findById(userId);
+    const toUser = await User.findById(id);
+
+    if (!user) {
+      console.log("❌ Step 3a: No user found with userId.");
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+    if (!toUser) {
+      console.log("❌ Step 3b: No user found with id.");
+      return res.status(404).json({
+        success: false,
+        message: "Recipient user not found",
+      });
+    }
+    console.log("✅ Step 3c: Both users found ->", user._id.toString(), toUser._id.toString());
+
+    // Check existing connection request
+    console.log("⏳ Step 4: Checking if connection request exists...");
+    const connection = await Connection.findOne({ from_user_id: id, to_user_id: userId });
+
+    if (!connection) {
+      console.log("❌ Step 4a: Connection request not found.");
+      return res.json({ success: false, message: "Connection request not found" });
+    }
+    console.log("✅ Step 4b: Connection request found with status:", connection.status);
+
+    // Update connections
+    console.log("⏳ Step 5: Adding users to each other's connections...");
+    if (!user.connections.includes(id)) {
+      user.connections.push(id);
+      console.log("➡️ Added recipient to user connections.");
+    } else {
+      console.log("ℹ️ Recipient already in user connections.");
+    }
+    await user.save();
+    console.log("✅ Step 5a: User saved successfully.");
+
+    if (!toUser.connections.includes(userId)) {
+      toUser.connections.push(userId);
+      console.log("➡️ Added user to recipient connections.");
+    } else {
+      console.log("ℹ️ User already in recipient connections.");
+    }
+    await toUser.save();
+    console.log("✅ Step 5b: Recipient saved successfully.");
+
+    // Update connection request status
+    console.log("⏳ Step 6: Updating connection request status to 'accepted'...");
+    connection.status = 'accepted';
+    await connection.save();
+    console.log("✅ Step 6a: Connection request status updated.");
+
+    // Optional: Send notification to the requester
+    console.log("⏳ Step 7: Sending notification to requester...");
+    await sendNotification({
+      userId: id, // the person who originally sent the request
+      type: "connection",
+      subject: "Your connection request was accepted",
+      text: `${user.username} has accepted your connection request.`
+    });
+    console.log("✅ Step 7a: Notification sent successfully.");
+
+    console.log("🎉 Step 8: Connection accepted successfully. Returning response.");
+    return res.json({ success: true, message: 'Connection accepted successfully' });
+
+  } catch (error) {
+    console.log("🚨 Step ERROR: Unexpected exception in acceptConnectionRequest!");
+    console.error(error);
+    console.log("========================================\n");
+
+    res.status(500).json({
+      success: false,
+      error: "Server error. Please try again later.",
+    });
+  }
+};
+
+
 module.exports = {
+  totalUser,
   getlocation,
    searchUser, 
    followUser,
    unfollowUser,
   sendConnectionRequest,
-  getUserConnections };
+  getUserConnections,
+  acceptConnectionRequest };
