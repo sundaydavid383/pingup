@@ -4,13 +4,35 @@ import StoriesBar from '../component/StoriesBar';
 import assets from '../assets/assets';
 import PostCard from '../component/PostCard';
 import RecentMessages from '../component/RecentMessages';
+import  location from "../utils/location"
+import { useAuth } from "../context/AuthContext";
+import axios from 'axios'
 
 const Feed = () => {
   const [feeds, setFeeds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sponsors, setSponsors] = useState(null);
   const [error, setError] = useState(null);
+  const {user} = useAuth();
 
+
+const getLocation = async (userId) => {
+  try {
+    const { latitude, longitude, city, country } = await location();
+    const response = await axios.get("http://localhost:5000/api/user/getlocation", {
+  params: {
+    userId,
+    currentCity: city,
+    country,
+    latitude,
+    longitude,
+  }
+});
+    console.log("user city tracked", response.data);
+  } catch (err) {
+    console.error("An error occurred while getting location", err);
+  }
+};
   const fetchFeeds = async () => {
     setFeeds(assets.dummyPostData);
     setLoading(false);
@@ -23,6 +45,7 @@ const Feed = () => {
 
   useEffect(() => {
     fetchFeeds();
+    getLocation(user._id);
     fetchSponsors();
   }, []);
 

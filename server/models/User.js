@@ -37,7 +37,8 @@ const userSchema = new Schema({
   bio: { type: String, maxlength: 500, default: '' },
   website: String,
   phoneNumber: String,
-
+  googleId: { type: String, unique: true, sparse: true },
+  
   dob: Date,
   gender: String,
   occupation: String,

@@ -141,7 +141,7 @@ const ChatBox = () => {
                   {msg.message_type === 'audio' && msg.media_url ? (
                     <AudioPreview audioURL={msg.media_url} isUser={sentByUser} />
                   ) : (
-                    <div className={`p-2 text-sm max-w-sm rounded-lg shadow ${sentByUser ? 'bg-white text-black rounded-br-none' : 'bg-[var(--accent)] text-white rounded-bl-none'}`}>
+                    <div className={`p-2 text-sm max-w-sm rounded-xl shadow ${sentByUser ? 'bg-white text-black rounded-br-none' : 'bg-[var(--accent)] text-white rounded-bl-none'}`}>
                       {msg.message_type === 'image' && msg.media_url && (
                         <img src={msg.media_url} alt='Sent media' className='w-full max-w-sm rounded-lg mb-1' />
                       )}

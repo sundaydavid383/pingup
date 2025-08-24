@@ -12,17 +12,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
   const { user } = useAuth();
 
   return (
-   <div
+<div
   className={`w-60 xl:w-72 flex flex-col justify-between items-center 
-  max-sm:fixed top-0 bottom-0 z-20 ${
+  max-sm:fixed sm:fixed top-0 bottom-0 z-20 ${
     sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-  } transition-all duration-300 ease-in-out sm:translate-x-0 sm:sticky sm:top-0`}
+  } transition-all duration-300 ease-in-out`}
   style={{
     backgroundColor: 'var(--form-bg)',
     borderRight: '1px solid var(--input-border)',
     color: 'var(--text-main)',
-    height: '100vh', 
-    backdropFilter: 'blur(12px)', 
+    height: '100vh',
+    backdropFilter: 'blur(12px)',
     WebkitBackdropFilter: 'blur(12px)',
   }}
 >

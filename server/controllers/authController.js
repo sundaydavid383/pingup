@@ -109,6 +109,74 @@ const registerUser = async (req, res) => {
 }
 };
 
+// google register
+const googleRegister = async (req, res) => {
+  console.log("=== [googleRegister] Function invoked ===");
+
+  try {
+   
+    console.log("[Step 1] Raw request body:", req.body);
+
+    
+    const { name, email, profilePicUrl, googleId } = req.body;
+    console.log("[Step 2] Extracted values:", {
+      name,
+      email,
+      profilePicUrl,
+      googleId,
+    });
+
+    
+    if (!email || !googleId) {
+      console.warn("[Step 3] Validation failed: Missing required fields");
+      return res.status(400).json({ message: "Email and Google ID are required" });
+    }
+    console.log("[Step 3] Validation passed: Required fields present");
+
+    
+    console.log(`[Step 4] Checking if user with email '${email}' exists...`);
+    let user = await User.findOne({ email });
+
+    if (!user) {
+      console.log("[Step 4] No user found. Creating a new user...");
+
+      user = new User({
+        name,
+        email,
+        profilePicUrl,
+        password: null, 
+        isVerified: true, 
+        googleId,
+      });
+
+      await user.save();
+      console.log("[Step 4] New Google user created successfully:", user._id);
+    } else {
+      console.log("[Step 4] User already exists. Skipping creation:", user._id);
+    }
+
+    // 5. Generate JWT token
+    console.log("[Step 5] Generating JWT token...");
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    console.log("[Step 5] Token generated successfully");
+
+    // 6. Send response
+    res.json({ user, token });
+    console.log("[Step 6] Response sent to client with user + token");
+
+  } catch (err) {
+    // 7. Handle and log errors
+    console.error("❌ [Error] Google Register failed:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+
+  console.log("=== [googleRegister] Function execution completed ===\n");
+};
+
 const resendOTP = async (req, res) => {
   const { userId } = req.body;
   if (!userId) {
@@ -460,7 +528,9 @@ const updateUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, 
+module.exports = { registerUser, 
+  googleRegister,
+   loginUser, 
   verifyOTP, deleteAllUsers,
    deleteUserById, resendOTP, 
   uploadImage, checkUsernameAvailability,

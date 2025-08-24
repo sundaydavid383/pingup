@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require('../middleware/uploadMiddleware');
 const { registerUser,
+    googleRegister,
     loginUser,
     verifyOTP, deleteAllUsers,
     deleteUserById, resendOTP,
@@ -12,6 +13,7 @@ const { registerUser,
 } = require('../controllers/authController');
 
 router.post('/register', registerUser);
+router.post("/google-register", googleRegister);
 router.post('/login', loginUser)
 router.post('/verify-otp', verifyOTP);
 router.post("/resend-otp", resendOTP);

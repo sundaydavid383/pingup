@@ -94,7 +94,7 @@ const Connections = () => {
     <button className='btn'>Accept</button>
   )}
   {currentTab === 'Connections' && (
-    <button onClick={() => navigate(`/messages/${user._id}`)} className='btn'>
+    <button onClick={() => navigate(`/chatbox/${user._id}`)} className='btn'>
       <MessageSquare className='w-4 h-4' />
       Message
     </button>
