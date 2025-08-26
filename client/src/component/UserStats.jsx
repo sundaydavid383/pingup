@@ -7,7 +7,7 @@ const UserStats = () => {
   useEffect(() => {
     const fetchTotalUsers = async () => {
       try {
-        const res = await axios.get("/api/users/total-users"); // adjust route if needed
+        const res = await axios.get(`${import.meta.env.VITE_SERVER}api/user/total-users`); // adjust route if needed
         if (res.data.success) {
           setTotalUsers(res.data.totalUsers);
         }

@@ -58,8 +58,8 @@ const userSchema = new Schema({
     type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: { type: [Number], default: [0, 0] } // [lng, lat]
   },
-  currentCity: { type: String, trim: true },
-  homeTown: { type: String, trim: true },
+  currentCity: { type: String, trim: true, default: '' },
+  homeTown: { type: String, trim: true, default: '' },
 
   // ❤️ Relationship field
   relationshipStatus: { 

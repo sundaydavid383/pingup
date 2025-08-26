@@ -2,16 +2,24 @@
 const User = require('../models/User');
 const Connection = require('../models/Connections')
 
-
 const totalUser = async (req, res) => {
+  console.log("📩 Incoming request to /api/users/total-users");
+
   try {
-    const totalUsers = await User.countDocuments({}); // count all users
+    console.log("🔍 Counting total users in the database...");
+    const totalUsers = await User.countDocuments({});
+    console.log("✅ Count successful. Total users:", totalUsers);
+
     res.json({ success: true, totalUsers });
+    console.log("📤 Response sent successfully:", { success: true, totalUsers });
+
   } catch (err) {
-    console.error("❌ Error fetching total users:", err);
+    console.error("❌ Error fetching total users:", err.message);
+    console.error("📑 Full error object:", err);
+
     res.status(500).json({ success: false, error: "Server error" });
   }
-}
+};
 // get user location
 const getlocation = async (req, res) => {
         console.log("=== [getlocation] Function invoked ===");
@@ -41,8 +49,14 @@ const getlocation = async (req, res) => {
           const updateFields = {};
           if (currentCity) updateFields.currentCity = currentCity;
           if (country) updateFields.country = country;
-          if (latitude) updateFields.latitude = latitude;
-          if (longitude) updateFields.longitude = longitude;
+
+          if(latitude && longitude){
+            updateFields.locationCoords = {
+              type: "Point",
+              coordinate: [parseFloat(longitude), parseFloat(latitude)]
+            }
+          }
+
 
           console.log("[Step 4] Prepared update fields:", updateFields);
 

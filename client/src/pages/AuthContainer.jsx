@@ -50,7 +50,7 @@ const handleGoogleSignup = async () => {
     const user = result.user;
     const username = user?.email?.split("@")[0] || "unknown";
 
-      const res = await axios.post("http://localhost:5000/api/auth/google-register", {
+      const res = await axios.post(`${import.meta.env.VITE_SERVER}api/auth/google-register`, {
         name: user.displayName,
         email: user.email,
         username,
@@ -117,9 +117,6 @@ const handleGoogleSignup = async () => {
                             fill-amber-500'/>))}
                             </div>
                             {<UserStats/>}
-                            <p className='text-xs md:text-sm text-[var(--primary-dark)]'>
-                                Used by 12k+ Individuals
-                            </p>
                         </div>
                     </div>
                     <h1 className='text-3xl md:text-6xl md:pb-2 font-bold 
