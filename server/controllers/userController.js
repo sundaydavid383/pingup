@@ -1,6 +1,8 @@
 // controllers/userController.js
 const User = require('../models/User');
 const Connection = require('../models/Connections')
+const cron = require("node-cron")
+const sendNotification = require("../utils/sendNotification")
 
 const totalUser = async (req, res) => {
   console.log("📩 Incoming request to /api/users/total-users");
@@ -22,74 +24,74 @@ const totalUser = async (req, res) => {
 };
 // get user location
 const getlocation = async (req, res) => {
-        console.log("=== [getlocation] Function invoked ===");
+  console.log("=== [getlocation] Function invoked ===");
 
-        try {
-          // 1. Log raw incoming request data
-          console.log("[Step 1] Raw request query:", req.query);
+  try {
+    // 1. Log raw incoming request data
+    console.log("[Step 1] Raw request query:", req.query);
 
-          // 2. Extract values from query
-          const { userId, currentCity, country, latitude, longitude } = req.query;
-          console.log("[Step 2] Extracted values:", {
-            userId,
-            currentCity,
-            country,
-            latitude,
-            longitude,
-          });
+    // 2. Extract values from query
+    const { userId, currentCity, country, latitude, longitude } = req.query;
+    console.log("[Step 2] Extracted values:", {
+      userId,
+      currentCity,
+      country,
+      latitude,
+      longitude,
+    });
 
-          // 3. Validate input (check if userId is provided)
-          if (!userId) {
-            console.warn("[Step 3] Validation failed: No userId provided");
-            return res.status(400).json({ message: "User ID is required" });
-          }
-          console.log("[Step 3] Validation passed: userId exists");
+    // 3. Validate input (check if userId is provided)
+    if (!userId) {
+      console.warn("[Step 3] Validation failed: No userId provided");
+      return res.status(400).json({ message: "User ID is required" });
+    }
+    console.log("[Step 3] Validation passed: userId exists");
 
-          // 4. Prepare the update object (only include fields that were actually provided)
-          const updateFields = {};
-          if (currentCity) updateFields.currentCity = currentCity;
-          if (country) updateFields.country = country;
+    // 4. Prepare the update object (only include fields that were actually provided)
+    const updateFields = {};
+    if (currentCity) updateFields.currentCity = currentCity;
+    if (country) updateFields.country = country;
 
-          if(latitude && longitude){
-            updateFields.locationCoords = {
-              type: "Point",
-              coordinate: [parseFloat(longitude), parseFloat(latitude)]
-            }
-          }
+    if (latitude && longitude) {
+      updateFields.locationCoords = {
+        type: "Point",
+        coordinate: [parseFloat(longitude), parseFloat(latitude)]
+      }
+    }
 
 
-          console.log("[Step 4] Prepared update fields:", updateFields);
+    console.log("[Step 4] Prepared update fields:", updateFields);
 
-          // 5. Attempt to update the user in the database
-          console.log(`[Step 5] Updating user with ID: ${userId}`);
-          const updatedUser = await User.findByIdAndUpdate(
-            userId,
-            updateFields,
-            { new: true }
-          );
+    // 5. Attempt to update the user in the database
+    console.log(`[Step 5] Updating user with ID: ${userId}`);
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      updateFields,
+      { new: true }
+    );
 
-          // 6. Check if user was found and updated
-          if (!updatedUser) {
-            console.warn(`[Step 6] No user found with ID: ${userId}`);
-            return res.status(404).json({ message: "User not found" });
-          }
-          console.log("[Step 6] User found and updated successfully:", updatedUser);
+    // 6. Check if user was found and updated
+    if (!updatedUser) {
+      console.warn(`[Step 6] No user found with ID: ${userId}`);
+      return res.status(404).json({ message: "User not found" });
+    }
+    console.log("[Step 6] User found and updated successfully:", updatedUser);
 
-          // 7. Send response back to client
-          res.json({
-            message: "Location updated successfully",
-            user: updatedUser,
-          });
-          console.log("[Step 7] Response sent to client");
+    // 7. Send response back to client
+    res.json({
+      message: "Location updated successfully",
+      user: updatedUser,
+    });
+    console.log("[Step 7] Response sent to client");
 
-        } catch (err) {
-          // 8. Catch and log any errors
-          console.error("❌ [Error] Failed to update user location:", err.message);
-          res.status(500).json({ message: "Server error" });
-        }
+  } catch (err) {
+    // 8. Catch and log any errors
+    console.error("❌ [Error] Failed to update user location:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
 
-        console.log("=== [getlocation] Function execution completed ===\n");
-      };
+  console.log("=== [getlocation] Function execution completed ===\n");
+};
 
 // 🔍 SEARCH CONTROLLER
 const searchUser = async (req, res) => {
@@ -113,8 +115,8 @@ const searchUser = async (req, res) => {
       $or: [
         { name: searchRegex },
         { username: searchRegex },
-       // { location: searchRegex },
-       // { email: searchRegex },
+        // { location: searchRegex },
+        // { email: searchRegex },
       ],
     };
 
@@ -231,7 +233,7 @@ const unfollowUser = async (req, res) => {
 
   try {
     // Extract user IDs
-    const { userId, id } = req.query; 
+    const { userId, id } = req.query;
     // userId = current user, id = target user
     console.log("📩 Step 1: Incoming params ->", { userId, id });
 
@@ -308,6 +310,9 @@ const sendConnectionRequest = async (req, res) => {
       });
     }
 
+    const toUser = await User.findById(id);
+    const user = await User.findById(userId); // also fetch sender for email text
+
     // Check if user has sent more than 20 connection requests in the last 24 hours
     console.log("▶️ Step 3: Checking connection requests in the last 24 hours...");
     const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -342,13 +347,14 @@ const sendConnectionRequest = async (req, res) => {
         from_user_id: userId,
         to_user_id: id,
       });
-       
-        await sendNotification({
+
+      await sendNotification({
         userId: id, // recipient
         type: "connection",
         subject: "New Connection Request on SpringsConnect",
         text: `Hi ${toUser.name}, you have received a new connection request from ${user.name}. Check your connection list to view the request and take action.`,
       });
+
       console.log("✅ Step 7: Connection request created successfully.");
       return res.json({
         success: true,
@@ -381,6 +387,38 @@ const sendConnectionRequest = async (req, res) => {
   }
 };
 
+// ------------------ Cron Job ------------------
+// Runs every hour to check for pending requests older than 24 hours
+cron.schedule("0 0 * * *", async () => {
+  console.log("⏰ Cron job running: checking pending connection requests older than 24h...");
+
+  try {
+    const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
+    const pendingConnections = await Connection.find({
+      status: "pending",
+      created_at: { $lt: cutoff },
+    });
+
+    for (let conn of pendingConnections) {
+      const toUser = await User.findById(conn.to_user_id);
+      const fromUser = await User.findById(conn.from_user_id);
+
+      if (toUser && fromUser) {
+        await sendNotification({
+          userId: conn.to_user,
+          type: "connection-reminder",
+          subject: "Reminder: Connection Request Pending",
+          text: `Hi ${toUser.name}, you still have a pending connection request from ${fromUser.name}. Please check your connections to accept or reject.`,
+        })
+
+        console.log(`📧 Reminder sent to ${toUser.name} for request from ${fromUser.name}`);
+      }
+    }
+  } catch (err) {
+    console.error("❌ Error in cron job:", err.message);
+  }
+})
 
 
 
@@ -565,9 +603,10 @@ const acceptConnectionRequest = async (req, res) => {
 module.exports = {
   totalUser,
   getlocation,
-   searchUser, 
-   followUser,
-   unfollowUser,
+  searchUser,
+  followUser,
+  unfollowUser,
   sendConnectionRequest,
   getUserConnections,
-  acceptConnectionRequest };
+  acceptConnectionRequest
+};
