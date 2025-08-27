@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Image as ImageIcon, File } from "lucide-react";
 import { Link } from "react-router-dom";
 import assets from '../assets/assets';
 import moment from 'moment';
@@ -54,17 +55,28 @@ const RecentMessages = () => {
 
               {/* Message text / media & Unread count */}
               <div className="flex justify-between items-center mt-1">
-                <span className="text-[14px] text-gray-500 truncate max-w-[80%]">
-                  {message.last_message.type === "text" && message.last_message.text
-                    ? <p>{message.last_message.text.slice(0, 30)}...</p>
-                    : "Media"}
-                </span>
-                {message.unread_count > 0 && (
-                  <p className="bg-[var(--primary)] text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">
-                    {message.unread_count}
-                  </p>
-                )}
-              </div>
+  <span className="text-[14px] text-gray-500 truncate max-w-[80%] flex items-center gap-1">
+    {message.last_message.type === "text" && message.last_message.text ? (
+      <p>{message.last_message.text.slice(0, 30)}...</p>
+    ) : message.last_message.type === "image" ? (
+      <>
+        <ImageIcon className="w-4 h-4 text-gray-400" />
+        <span>Image</span>
+      </>
+    ) : (
+      <>
+        <File className="w-4 h-4 text-gray-400" />
+        <span>Media</span>
+      </>
+    )}
+  </span>
+
+  {message.unread_count > 0 && (
+    <p className="bg-[var(--primary)] text-white w-4 h-4 flex items-center justify-center rounded-full text-[10px]">
+      {message.unread_count}
+    </p>
+  )}
+</div>
             </div>
           </Link>
         ))}

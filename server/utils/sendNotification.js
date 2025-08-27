@@ -54,7 +54,7 @@ await transporter.sendMail({
         
         <!-- Call-to-Action Button -->
         <div style="text-align: center; margin-top: 30px;">
-          <a href="https://springsconnect.com/connections" 
+          <a href="${process.env.CLIENT_URL3}connections" 
              style="background-color: #1f3c88; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 6px; font-weight: bold; display: inline-block;">
             View Connection Request
           </a>

@@ -55,7 +55,7 @@ const getlocation = async (req, res) => {
     if (latitude && longitude) {
       updateFields.locationCoords = {
         type: "Point",
-        coordinate: [parseFloat(longitude), parseFloat(latitude)]
+        coordinates: [parseFloat(longitude), parseFloat(latitude)]
       }
     }
 
