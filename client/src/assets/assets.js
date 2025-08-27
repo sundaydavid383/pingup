@@ -827,6 +827,36 @@ const currentUser = {
   following: ["u8"],       // People John is following
   connections: ["u6", "u7", "u8"] // Friends or church network
 };
+const dummyNotifications = [
+  {
+    _id: "1",
+    type: "connection",
+    text: "John Doe sent you a connection request",
+    isRead: false,
+    createdAt: new Date("2025-08-26T12:30:00"),
+  },
+  {
+    _id: "2",
+    type: "message",
+    text: "You received a new message from Sarah",
+    isRead: true,
+    createdAt: new Date("2025-08-26T10:00:00"),
+  },
+  {
+    _id: "3",
+    type: "system",
+    text: "Your password was changed successfully",
+    isRead: false,
+    createdAt: new Date("2025-08-25T18:45:00"),
+  },
+  {
+    _id: "4",
+    type: "custom",
+    text: "Reminder: Choir practice at 5PM today",
+    isRead: false,
+    createdAt: new Date("2025-08-27T09:15:00"),
+  },
+];
 const assets = {
     logo,
     groupuser,
@@ -843,7 +873,8 @@ const assets = {
     dummyFollowingData,
     dummyPendingConnectionsData,
     dummyConnectionsData,
-    currentUser
+    currentUser,
+    dummyNotifications
     // ...list all images
 };
 

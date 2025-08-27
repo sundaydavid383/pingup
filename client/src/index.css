@@ -7,20 +7,63 @@
 
 /* Root Colors */
 :root {
-  --color-1: #fdfcfb;
-  --color-2: #e2d1c3;
-  --color-3: #a18cd1;
-  --color-4: #fbc2eb;
-  --color-5: #8fd3f4;
-  --radial-highlight: rgba(255, 255, 255, 0.2);
-}
-:root {
-  --color-1: #fdfcfb;
+  /* Primary Theme Colors */
+  --primary: #1e40af; /* Indigo-800 */
+  --secondary: #0f172a; /* Slate-900 */
+  --accent: var(--primary);
+
+    --color-1: #fdfcfb;
   --color-2: #e2d1c3;
   --color-3: #c2b3e4;
   --color-4: #fae8f5;
   --color-5: #8fd3f4;
   --radial-highlight: rgba(255, 255, 255, 0.2);
+
+  /* Typography */
+  --text-main: #fdfdfd; /* Slate-50 */
+  --text-secondary: #94a3b8; /* Slate-400 */
+  --text-muted: #64748b; /* Slate-500 */
+  --text-accent-dark: #4338ca; /* Indigo-700 */
+
+  /* Backgrounds */
+  --bg-main: #0f172a; /* Slate-900 */
+  --bg-light: #1e293b; /* Slate-800 */
+  --form-bg: rgba(15, 23, 42, 0.75);
+  --input-bg: rgba(15, 23, 42, 0.6);
+  --hover-light: #c9d4f7; /* Indigo-50 */
+  --hover-subtle-bg: #f9fafb; /* Gray-50 */
+  --hover-dark: #809cf0;
+  --dark-indigo-gradient: linear-gradient(to right, var(--bg-light), var(--primary));
+  --inverse-dark-indigo-gradient: linear-gradient(to right, var(--primary), var(--bg-light));
+  --hover-gradient: linear-gradient(to right, var(--hover-light), var(--hover-dark));
+  --inverse-hover-gradient: linear-gradient(to right, var(--hover-dark), var(--hover-light));
+
+  /* Borders & Shadows */
+  --input-border: #99b7e0;
+  --input-shadow: 0 0 0 1px #334155;
+
+  /* Effects */
+  --backdrop-blur: blur(10px);
+  --transition-default: all 0.3s ease;
+
+  /* Button Colors */
+  --btn-bg: #1e40af;
+  --btn-hover: #1e3a8a;
+  --btn-text: #ffffff;
+
+  /* Radius & Spacing */
+  --radius: 0.5rem;
+  --padding: 1rem;
+
+  /* ==== Alert / Toast colors (add these) ==== */
+  --success: #16a34a;   /* green-600 */
+  --error:   #ef4444;   /* red-500 */
+  --info:    #3b82f6;   /* blue-500 */
+  --warning: #f59e0b;   /* amber-500 */
+
+  /* commonly used text color */
+  --white: #ffffff;
+  --black: #000000;
 }
 
 /* Gradient Background */
@@ -65,6 +108,133 @@ option{
 .hidden_scrollbar {
   -ms-overflow-style: none;  /* IE & Edge */
   scrollbar-width: none;     /* Firefox */
+}
+
+.gradient-hover:hover {
+  background: var(--hover-gradient);
+   transition: background 0.3s ease;
+}
+.story-gradient{
+  background: var(--dark-indigo-gradient);
+     transition: background 0.3s ease;
+}
+.story-gradient:hover{
+    background: var(--inverse-dark-indigo-gradient);
+}
+/* Active state uses the full gradient immediately */
+.custom-gradient {
+  background: var(--hover-gradient);
+}
+.custom-gradient:hover{
+  background: var(--inverse-hover-gradient);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-main);
+  background-color: var(--accent);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Hover & lift */
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Glass shimmer */
+.btn::before {
+  content: "";
+  position: absolute;
+  top: -90%;
+  left: -194%;
+  width: 100px;
+  height: 200px;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  transform: rotate(25deg);
+  z-index: 1;
+}
+
+/* Ripple click effect */
+.btn::after {
+  content: "";
+  position: absolute;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  pointer-events: none;
+  width: 100px;
+  height: 100vh;
+  top: 50%;
+  left: 50%;
+  transform: scale(0) translate(-50%, -50%);
+  opacity: 0;
+  transition: transform 0.5s ease, opacity 1s ease;
+  z-index: 2;
+}
+
+.btn:active::after {
+  transform: scale(2.5) translate(-50%, -50%);
+  opacity: 1;
+}
+.btn:hover::before{
+  animation: shimmer 2.5s infinite;
+}
+.no-scrollbar::-webkit-scrollbar{
+  display: none;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background: gray;
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.3s infinite ease-in-out;
+}
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+.shimmer{
+  animation: shimmer 2s infinite;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+/* Shimmer keyframe */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-109%) rotate(25deg);
+  }
+  100% {
+    transform: translateX(760%) rotate(25deg);
+  }
 }
 @keyframes gradientShift {
   0% {

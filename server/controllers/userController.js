@@ -295,7 +295,7 @@ const unfollowUser = async (req, res) => {
   }
 };
 
-// Send Connection Request
+// Send Connection Request Notfication controller
 const sendConnectionRequest = async (req, res) => {
   try {
     console.log("▶️ Step 1: Controller called with query:", req.query);
@@ -386,7 +386,67 @@ const sendConnectionRequest = async (req, res) => {
     });
   }
 };
+ 
+const getUserNotifications = async (req, res) => {
+  try {
+    console.log("➡️ Incoming request to getUserNotifications");
+    console.log("🔍 req.query:", req.query);
 
+    const { userId } = req.query;
+
+    // Step 1: Check if userId exists
+    if (!userId) {
+      console.log("❌ userId missing in query params");
+      return res.status(400).json({
+        success: false,
+        message: "userId is required",
+      });
+    }
+    console.log("✅ userId received:", userId);
+
+    // Step 2: Fetch user
+    const user = await User.findById(userId).select("notificationSchema");
+    console.log("🔍 User fetched from DB:", user ? "FOUND" : "NOT FOUND");
+
+    if (!user) {
+      console.log("❌ User not found with ID:", userId);
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    // Step 3: Check notifications array
+    if (!user.notificationSchema || user.notificationSchema.length === 0) {
+      console.log("ℹ️ No notifications found for this user.");
+      return res.json({
+        success: true,
+        notifications: [],
+      });
+    }
+    console.log("✅ Notifications count:", user.notificationSchema.length);
+
+    // Step 4: Sort notifications
+    const notifications = [...user.notificationSchema].sort(
+      (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    console.log("✅ Notifications sorted successfully");
+
+    // Step 5: Return response
+    console.log("📤 Sending notifications response...");
+    return res.json({
+      success: true,
+      notifications,
+    });
+
+  } catch (error) {
+    console.log("🚨 Error fetching notifications:", error);
+    res.status(500).json({
+      success: false,
+      error: "Server error. Please try again later.",
+    });
+  }
+};
 // ------------------ Cron Job ------------------
 // Runs every hour to check for pending requests older than 24 hours
 cron.schedule("0 0 * * *", async () => {
@@ -607,6 +667,7 @@ module.exports = {
   followUser,
   unfollowUser,
   sendConnectionRequest,
+  getUserNotifications,
   getUserConnections,
   acceptConnectionRequest
 };
