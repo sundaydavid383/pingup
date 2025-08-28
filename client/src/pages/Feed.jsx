@@ -19,7 +19,7 @@ const Feed = () => {
 const getLocation = async (userId) => {
   try {
     const { latitude, longitude, city, country } = await location();
-    const response = await axios.get("http://localhost:5000/api/user/getlocation", {
+    const response = await axios.get(`${import.meta.env.VITE_SERVER}api/user/getlocation`, {
   params: {
     userId,
     currentCity: city,

@@ -1,0 +1,40 @@
+
+{
+    The feature to allow hospitals have their own landing page and domain on our website is a good idea but it is for the future, not now
+
+}
+
+{
+    1. Donor registration and records of donations. Most important 
+
+2. Lab test results and issuing blood units per buyer(hospital or individual) are very important incase we are ever asked to present these and it will work together. Second most important.
+
+3. Report statistics is useful to us the owners, so that we can refine our business. Just as important as 1, to prevent leaks
+
+Hospital request for blood is great, and will help us in the business process.}
+
+{
+    All of them
+1. HIV 1 & 2 (antibody + antigen testing).
+2. Hepatitis B surface antigen (HBsAg).
+3. ⁠Hepatitis C (HCV).
+4. ⁠Syphilis (VDRL / TPHA).,
+
+Splitting the blood into components is a wonderful addition, and would come at cost. We need a special license for platelets and co. This part is for the future,
+
+Anyone can donate, no rules
+
+}
+
+{
+Do you want the site to show hospitals the real-time stock of blood by type and location?
+ANSWER-This is good, but it’s for the future, not now.,
+
+When a hospital requests blood, should the system reserve the unit for some hours before giving it to another hospital? If yes, how long?
+ANSWER-This is good, but it’s for the future, not now.,
+
+Do you want the system to remind you about blood expiry dates or storage temperature issues?
+Yes, this would be very important to avoid any problems, but I don’t expect the blood to stay in the shelf up to 5days.
+Which is why the donor registration is necessary  so we have a sort of donor farm.
+
+}

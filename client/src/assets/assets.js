@@ -33,6 +33,7 @@ const menuItemsData = [
   { to: '/connections', label: 'Connections', icon: Users },
   { to: '/discover', label: 'Discover', icon: Compass },
   { to: '/profile', label: 'Profile', icon: User },
+  { to: '/notification', label: 'Notification', icon: LayoutDashboard },
 ];
 
 const dummyStoriesData = [

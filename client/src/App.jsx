@@ -13,7 +13,7 @@ import { useAuth } from "./context/AuthContext";
 import Layout from './pages/Layout';
 import UserModal from "./component/UserModal";
 import {Toaster} from 'react-hot-toast';
-import StoriesBar from './component/StoriesBar';
+import Notification from "./pages/Notification"
 const App = () => {
   const { user, modalOpen, setModalOpen } = useAuth();
   
@@ -50,6 +50,7 @@ const App = () => {
     <Route path="profile" element={<Profile />} />
     <Route path="profile/:profileId" element={<Profile />} />
     <Route path="create-post" element={<CreatePost />} />
+    <Route path="notification" element={<Notification userId={user?._id}/>} />
   </Route>
 </Routes>
     </>

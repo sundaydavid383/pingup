@@ -306,7 +306,7 @@ const loginUser = async (req, res) => {
         message: "Invalid email or password",
       });
     }
-    console.log("✅ Step 3 SUCCESS: User found with ID:", user._id);
+    console.log("✅ Step 3 SUCCESS: User found with ID:", user);
 
     // Step 4: Compare passwords
     console.log("🔐 Step 4: Comparing passwords...");

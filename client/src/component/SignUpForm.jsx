@@ -67,7 +67,7 @@ const checkIfUserNameExist = async (username) => {
   try {
     setLoading(true);
     setLoadingText("Verifing if username has not been used...");
-    const response = await axios.get(`http://localhost:5000/api/auth/check-username/${username}`);
+    const response = await axios.get(`${import.meta.env.VITE_SERVER}api/auth/check-username/${username}`);
     return response.data.exists; // true if taken, false if available
   } catch (error) {
     console.error("Error checking username:", error);
@@ -88,7 +88,7 @@ const checkIfUserNameExist = async (username) => {
             try {
               setLoading(true);
               setLoadingText('Uploading image...');
-              const res = await axios.post('http://localhost:5000/api/auth/upload-image', form, {
+              const res = await axios.post(`${import.meta.env.VITE_SERVER}api/auth/upload-image`, form, {
                 headers: { 'Content-Type': 'multipart/form-data' }
               });
 
@@ -257,7 +257,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
 
       try {
         const {latitude, longitude, city, country} = await location();
-        const response = await axios.post("http://localhost:5000/api/auth/register", {
+        const response = await axios.post(`${import.meta.env.VITE_SERVER}api/auth/register`, {
           name: formData.name,
           email: formData.email,
           username: formData.username,   
@@ -565,7 +565,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
                   try {
                     setLoading(true)
                     setLoadingText("verifing OTP..")
-                    const res = await axios.post("http://localhost:5000/api/auth/verify-otp", {
+                    const res = await axios.post(`${import.meta.env.VITE_SERVER}api/auth/verify-otp`, {
                       userId,
                       otp
                     });
@@ -610,7 +610,7 @@ if (isNaN(age)) return 'Date of Birth must be a valid date';
                     setLoading(true);
                     setLoadingText("Resending OTP...");
 
-                    const res = await axios.post("http://localhost:5000/api/auth/resend-otp", {
+                    const res = await axios.post(`${import.meta.env.VITE_SERVER}api/auth/resend-otp`, {
                       userId,
                     });
 

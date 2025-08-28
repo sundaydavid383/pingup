@@ -113,7 +113,16 @@ const userSchema = new Schema({
 
   // 📊 Sessions / analytics / preferences
   sessions: [sessionSchema],
-  notificationSchema: {type: [notificationSchema], default: ()=> ({}) },
+  notifications: {
+  type: [notificationSchema],
+  default: () => ([
+    {
+      type: "system",
+      text: "🎉 Welcome! Your account has been created successfully.",
+      isRead: false
+    }
+  ])
+},
   notificationSettings: { type: notificationSettingsSchema, default: () => ({}) },
   privacySettings: { type: privacySettingsSchema, default: () => ({}) },
 

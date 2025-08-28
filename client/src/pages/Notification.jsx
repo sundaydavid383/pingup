@@ -3,7 +3,7 @@ import { Bell, Mail, UserPlus, AlertCircle } from "lucide-react";
 import assets from "../assets/assets";
 import NotificationSkeleton from "../component/NotificationSkeleton"
 
-const NotificationList = ({ userId }) => {
+const Notification = ({ userId }) => {
   const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,12 +29,14 @@ const NotificationList = ({ userId }) => {
             else{
                  setNotifications(data.notifications);
             }
+            console.log("dummyNotifications", assets.dummyNotifications)
+            console.log("data.notifications", data.notifications)
          
         }
       } catch (error) {
         console.error("Error fetching notifications", error);
       } finally {
-        setLoading(false);
+        //setLoading(false);
       }
     };
 
@@ -47,7 +49,7 @@ const NotificationList = ({ userId }) => {
     <div className="max-w-md w-full bg-white rounded-xl shadow p-4 space-y-3">
       <h2 className="text-lg font-semibold text-gray-800">Notifications</h2>
       <div className="divide-y divide-gray-200">
-        {notifications.length > 0 ? (
+        {notifications?.length > 0 ? (
           notifications.map((n) => (
             <div
               key={n._id}
@@ -73,4 +75,4 @@ const NotificationList = ({ userId }) => {
   );
 };
 
-export default NotificationList;
+export default Notification;
