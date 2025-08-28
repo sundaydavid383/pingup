@@ -50,7 +50,7 @@ const LoginForm = ({ onSwitchToSignUp }) => {
       setLoading(false);
 
       if (!res.ok) {
-        setAlert({ show: true, message: data.message || "Login failed", type: "error" });
+        setAlert({ show: true, message: data.message || "Login failed wrongg email or password", type: "error" });
         return;
       }
 
