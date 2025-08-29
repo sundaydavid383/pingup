@@ -20,7 +20,8 @@ import {
   Users,
   User,
   LayoutDashboard, // FaTachometerAlt
-  Search,        // FaSearch
+  Search, 
+  Bell,       // FaSearch
   MessageCircle, // same name in lucide-react
   Compass        // FiCompass
 } from 'lucide-react';
@@ -33,7 +34,7 @@ const menuItemsData = [
   { to: '/connections', label: 'Connections', icon: Users },
   { to: '/discover', label: 'Discover', icon: Compass },
   { to: '/profile', label: 'Profile', icon: User },
-  { to: '/notification', label: 'Notification', icon: LayoutDashboard },
+  { to: '/notification', label: 'Notification', icon: Bell },
 ];
 
 const dummyStoriesData = [
